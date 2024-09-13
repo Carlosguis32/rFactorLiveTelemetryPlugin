@@ -1,0 +1,4 @@
+C:\Users\cpast\OneDrive\Escritorio\rFactorExamplePluginModified\rFactorExamplePlugin\VC7\Debug\ExamplePlugin.dll
+C:\Users\cpast\OneDrive\Escritorio\FS10_RS_LiveTelemetry\VC7\Debug\ExamplePlugin.dll
+C:\Users\cpast\OneDrive\Escritorio\FS10_RS_LiveTelemetry\Project\Debug\ExamplePlugin.dll
+C:\Users\cpast\OneDrive\Escritorio\FS11_RS_LiveTelemetry (VS Project)\Project\Debug\ExamplePlugin.dll
