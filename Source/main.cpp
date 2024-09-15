@@ -184,18 +184,18 @@ void ExampleInternalsPlugin::UpdateTelemetry(const TelemInfo& info)  // This fun
 
     try {
         data.steering = static_cast<int>(info.mUnfilteredSteering * 100);
-        data.steering = static_cast<int>(info.mUnfilteredThrottle * 100);
-        data.steering = static_cast<int>(info.mUnfilteredBrake * 100);
-        data.steering = static_cast<int>(info.mGear);
-		data.steering = static_cast<int>(metersPerSec * 3.6);
-		data.steering = static_cast<int>(info.mLocalAccel.x / 9.80665);
-		data.steering = static_cast<int>(info.mLocalAccel.z / 9.80665);
-		data.steering = static_cast<int>(roll * radsToDeg);
-		data.steering = static_cast<int>(pitch * radsToDeg);
-		data.steering = static_cast<int>(info.mEngineRPM);
-		data.steering = static_cast<int>(info.mWheel[0].mTireLoad + info.mWheel[1].mTireLoad);
-		data.steering = static_cast<int>(info.mWheel[2].mTireLoad + info.mWheel[3].mTireLoad);
-		data.steering = static_cast<int>(info.mLapStartET);
+        data.throttle = static_cast<int>(info.mUnfilteredThrottle * 100);
+        data.brake = static_cast<int>(info.mUnfilteredBrake * 100);
+        data.gear = static_cast<int>(info.mGear);
+		data.speed = static_cast<int>(metersPerSec * 3.6);
+		data.accelLat = static_cast<int>(info.mLocalAccel.x / 9.80665);
+		data.accelLong = static_cast<int>(info.mLocalAccel.z / 9.80665);
+		data.roll = static_cast<int>(roll * radsToDeg);
+		data.pitch = static_cast<int>(pitch * radsToDeg);
+		data.rpm = static_cast<int>(info.mEngineRPM);
+		data.fzF = static_cast<int>(info.mWheel[0].mTireLoad + info.mWheel[1].mTireLoad);
+		data.fzR = static_cast<int>(info.mWheel[2].mTireLoad + info.mWheel[3].mTireLoad);
+		data.lapIniTime = static_cast<int>(info.mLapStartET);
 
         if (sendto(sockfd, (const char*)&data, sizeof(data), 0,
             (const sockaddr*)&servaddr, sizeof(servaddr)) == SOCKET_ERROR) {
