@@ -23,6 +23,7 @@
 #endif
 
 #include "main.hpp"
+#include "ini.h"
 #include <math.h>
 #include <string>
 #include <stdio.h>
@@ -101,19 +102,87 @@ std::string IPAddress = "127.0.0.1";
 int port = 6000;
 
 struct SignalsData {
-    float steering;
-	float throttle;
-	float brake;
-	float gear;
+    float clutchRPM;
+    float deltaTime;
+    float engineOilTemp;
+	float engineWaterTemp;
+	float lapNumber;
+	float lapStartET;
+	float localAccelX;
+	float localAccelY;
+	float localAccelZ;
+    float localRotX;
+    float localRotY;
+    float localRotZ;
+    float localRotAccelX;
+    float localRotAccelY;
+    float localRotAccelZ;
+	float localVelX;
+	float localVelY;
+	float localVelZ;
+	float oriXX;
+	float oriXY;
+	float oriXX;
+	float oriYX;
+	float oriYY;
+	float oriYZ;
+	float oriZX;
+	float oriZY;
+	float oriZZ;
+	float posX;
+	float posY;
+	float posZ;
+	float steeringArmForce;
+    float trackName;
 	float speed;
 	float accelLat;
 	float accelLong;
 	float roll;
 	float pitch;
 	float rpm;
-	float fzF;
-	float fzR;
 	float lapIniTime;
+	float brake;
+	float clutch;
+	float steering;
+	float throttle;
+	float gear;
+    float vehicleName;
+    float brakeTempFL;
+	float brakeTempFR;
+	float brakeTempRL;
+	float brakeTempRR;
+    float gripFactorFL;
+	float gripFactorFR;
+	float gripFactorRL;
+	float gripFactorRR;
+    float lateralForceFL;
+	float lateralForceFR;
+	float lateralForceRL;
+	float lateralForceRR;
+    float pressureFL;
+	float pressureFR;
+	float pressureRL;
+	float pressureRR;
+	float rideHeightFL;
+	float rideHeightFR;
+	float rideHeightRL;
+	float rideHeightRR;
+	float rotationFL;
+	float rotationFR;
+	float rotationRL;
+	float rotationRR;
+	float shockDeflectionFL;
+	float shockDeflectionFR;
+	float shockDeflectionRL;
+	float shockDeflectionRR;
+	float tireTempFL;
+	float tireTempFR;
+	float tireTempRL;
+	float tireTempRR;
+	float tireLoadFL;
+	float tireLoadFR;
+	float tireLoadRL;
+	float tireLoadRR;
 };
 
 WSADATA wsaData;
@@ -131,7 +200,7 @@ void ExampleInternalsPlugin::Startup()
 {
   // Open ports, read configs, whatever you need to do.  For now, I'll just clear out the
   // example output data.
-  FILE *fo = fopen( "ExampleInternalsOutput.txt", "w" );
+  FILE *fo = fopen( "LiveTelemetryPluginConfig.txt", "w" );
   fclose( fo );
   
   // default enabled to true
@@ -193,8 +262,6 @@ void ExampleInternalsPlugin::UpdateTelemetry(const TelemInfo& info)  // This fun
 		data.roll = static_cast<int>(roll * radsToDeg);
 		data.pitch = static_cast<int>(pitch * radsToDeg);
 		data.rpm = static_cast<int>(info.mEngineRPM);
-		data.fzF = static_cast<int>(info.mWheel[0].mTireLoad + info.mWheel[1].mTireLoad);
-		data.fzR = static_cast<int>(info.mWheel[2].mTireLoad + info.mWheel[3].mTireLoad);
 		data.lapIniTime = static_cast<int>(info.mLapStartET);
 
         if (sendto(sockfd, (const char*)&data, sizeof(data), 0,
