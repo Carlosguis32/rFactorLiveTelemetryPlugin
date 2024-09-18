@@ -6,8 +6,8 @@
 //İ                                                                         Ş
 //İ This source code module, and all information, data, and algorithms      Ş
 //İ associated with it, are part of isiMotor Technology (tm).               Ş
-//İ                 PROPRIETARY                                             Ş
-//İ Copyright (c) 1996-2005 Image Space Incorporated.  All rights reserved. Ş
+//İ                 PROPRIETARY AND CONFIDENTIAL                            Ş
+//İ Copyright (c) 1996-2007 Image Space Incorporated.  All rights reserved. Ş
 //İ                                                                         Ş
 //İ Change history:                                                         Ş
 //İ   kc.2004.0?.??: created                                                Ş
@@ -21,14 +21,10 @@
 
 #include <windows.h>
 
-//**************************************************************************//
-// Nothing should be changed in this file
-//**************************************************************************//
 
-//**************************************************************************//
 // forward referencing stuff
 class PluginObjectInfo;
-//**************************************************************************//
+
 
 //ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
 //³ typedefs for dll functions - easier to use a typedef than to type
@@ -41,7 +37,7 @@ typedef PluginObjectInfo* (__cdecl *GETPLUGINOBJECTINFO)(const unsigned uIndex);
 typedef PluginObjectInfo* (__cdecl *GETPLUGINOBJECTINFO)(const unsigned uIndex);
 typedef float (__cdecl *GETPLUGINSYSTEMVERSION) ();
 
-//**************************************************************************//
+
 //plugin object types
 enum PluginObjectType
 {
@@ -55,7 +51,7 @@ enum PluginObjectType
   PO_IVIBE        = 0x00000008,
   PO_INTERNALS    = 0x00000009,
 };
-//**************************************************************************//
+
 
 //ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
 //³  Plugin Object Property
@@ -69,21 +65,16 @@ enum POPType
   POPTYPE_STRING,
 };
 
-//**************************************************************************//
 static char POPTypeNames[3][64] = 
 {
   "POPTYPE_INT",
   "POPTYPE_FLOAT",
   "POPTYPE_STRING",
 };
-//**************************************************************************//
 
-//**************************************************************************//
 const unsigned POP_MAXNAME = 32;
 const unsigned POP_MAXDESC = 256;
-//**************************************************************************//
 
-//**************************************************************************//
 struct PluginObjectProperty
 {
   union
@@ -97,7 +88,6 @@ struct PluginObjectProperty
   char szName[POP_MAXNAME];
   char szDesc[POP_MAXDESC];
 };
-//**************************************************************************//
 
 //ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
 //³  PluginObject 
@@ -135,5 +125,9 @@ public:
   virtual const unsigned GetVersion() const = 0;
   virtual void* Create() const = 0;
 };
+
+
+
+
 
 #endif

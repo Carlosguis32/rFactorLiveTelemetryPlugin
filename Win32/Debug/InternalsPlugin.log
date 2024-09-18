@@ -1,0 +1,125 @@
+﻿cl : línea de comandos  warning D9035: La opción 'Gm' está desusada y se quitará en próximas versiones
+  Example.cpp
+  Defining YAML_CPP_API for DLL import
+C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Win32\packages\fluid.yaml-cpp.1.0.10\build\include\yaml-cpp\parser.h(85,28): warning C4251: "YAML::Parser::m_pScanner": "std::unique_ptr<YAML::Scanner,std::default_delete<YAML::Scanner>>" debe tener una interfaz DLL para que la usen los clientes de "YAML::Parser"
+  (compilando archivo de origen "../Source/Example.cpp")
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\memory(3335,7):
+      vea la declaración de 'std::unique_ptr<YAML::Scanner,std::default_delete<YAML::Scanner>>'
+  
+C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Win32\packages\fluid.yaml-cpp.1.0.10\build\include\yaml-cpp\parser.h(86,31): warning C4251: "YAML::Parser::m_pDirectives": "std::unique_ptr<YAML::Directives,std::default_delete<YAML::Directives>>" debe tener una interfaz DLL para que la usen los clientes de "YAML::Parser"
+  (compilando archivo de origen "../Source/Example.cpp")
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\memory(3335,7):
+      vea la declaración de 'std::unique_ptr<YAML::Directives,std::default_delete<YAML::Directives>>'
+  
+C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Win32\packages\fluid.yaml-cpp.1.0.10\build\include\yaml-cpp\binary.h(65,30): warning C4251: "YAML::Binary::m_data": "std::vector<unsigned char,std::allocator<unsigned char>>" debe tener una interfaz DLL para que la usen los clientes de "YAML::Binary"
+  (compilando archivo de origen "../Source/Example.cpp")
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\vector(429,7):
+      vea la declaración de 'std::vector<unsigned char,std::allocator<unsigned char>>'
+  
+C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Win32\packages\fluid.yaml-cpp.1.0.10\build\include\yaml-cpp\ostream_wrapper.h(49,29): warning C4251: "YAML::ostream_wrapper::m_buffer": "std::vector<char,std::allocator<char>>" debe tener una interfaz DLL para que la usen los clientes de "YAML::ostream_wrapper"
+  (compilando archivo de origen "../Source/Example.cpp")
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\vector(429,7):
+      vea la declaración de 'std::vector<char,std::allocator<char>>'
+  
+C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Win32\packages\fluid.yaml-cpp.1.0.10\build\include\yaml-cpp\emitter.h(132,33): warning C4251: "YAML::Emitter::m_pState": "std::unique_ptr<YAML::EmitterState,std::default_delete<YAML::EmitterState>>" debe tener una interfaz DLL para que la usen los clientes de "YAML::Emitter"
+  (compilando archivo de origen "../Source/Example.cpp")
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\memory(3335,7):
+      vea la declaración de 'std::unique_ptr<YAML::EmitterState,std::default_delete<YAML::EmitterState>>'
+  
+C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Win32\packages\fluid.yaml-cpp.1.0.10\build\include\yaml-cpp\exceptions.h(153,44): warning C4275: se ha utilizado una interfaz no de DLL class 'std::runtime_error' como base para la interfaz DLL class 'YAML::Exception'
+  (compilando archivo de origen "../Source/Example.cpp")
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\stdexcept(100,19):
+      vea la declaración de 'std::runtime_error'
+      C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Win32\packages\fluid.yaml-cpp.1.0.10\build\include\yaml-cpp\exceptions.h(153,20):
+      vea la declaración de 'YAML::Exception'
+  
+C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Win32\packages\fluid.yaml-cpp.1.0.10\build\include\yaml-cpp\exceptions.h(162,15): warning C4251: "YAML::Exception::msg": "std::basic_string<char,std::char_traits<char>,std::allocator<char>>" debe tener una interfaz DLL para que la usen los clientes de "YAML::Exception"
+  (compilando archivo de origen "../Source/Example.cpp")
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\xstring(527,7):
+      vea la declaración de 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'
+  
+C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Win32\packages\fluid.yaml-cpp.1.0.10\build\include\yaml-cpp\node\node.h(135,15): warning C4251: "YAML::Node::m_invalidKey": "std::basic_string<char,std::char_traits<char>,std::allocator<char>>" debe tener una interfaz DLL para que la usen los clientes de "YAML::Node"
+  (compilando archivo de origen "../Source/Example.cpp")
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\xstring(527,7):
+      vea la declaración de 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'
+  
+C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Win32\packages\fluid.yaml-cpp.1.0.10\build\include\yaml-cpp\node\node.h(136,40): warning C4251: "YAML::Node::m_pMemory": "std::shared_ptr<YAML::detail::memory_holder>" debe tener una interfaz DLL para que la usen los clientes de "YAML::Node"
+  (compilando archivo de origen "../Source/Example.cpp")
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\memory(1560,7):
+      vea la declaración de 'std::shared_ptr<YAML::detail::memory_holder>'
+  
+C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Win32\packages\fluid.yaml-cpp.1.0.10\build\include\yaml-cpp\node\detail\memory.h(31,9): warning C4251: "YAML::detail::memory::m_nodes": "std::set<YAML::detail::shared_node,std::less<YAML::detail::shared_node>,std::allocator<YAML::detail::shared_node>>" debe tener una interfaz DLL para que la usen los clientes de "YAML::detail::memory"
+  (compilando archivo de origen "../Source/Example.cpp")
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\set(51,7):
+      vea la declaración de 'std::set<YAML::detail::shared_node,std::less<YAML::detail::shared_node>,std::allocator<YAML::detail::shared_node>>'
+  
+C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Win32\packages\fluid.yaml-cpp.1.0.10\build\include\yaml-cpp\node\detail\memory.h(42,17): warning C4251: "YAML::detail::memory_holder::m_pMemory": "std::shared_ptr<YAML::detail::memory>" debe tener una interfaz DLL para que la usen los clientes de "YAML::detail::memory_holder"
+  (compilando archivo de origen "../Source/Example.cpp")
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\memory(1560,7):
+      vea la declaración de 'std::shared_ptr<YAML::detail::memory>'
+  
+C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Win32\packages\fluid.yaml-cpp.1.0.10\build\include\yaml-cpp\node\detail\node_data.h(104,15): warning C4251: "YAML::detail::node_data::m_tag": "std::basic_string<char,std::char_traits<char>,std::allocator<char>>" debe tener una interfaz DLL para que la usen los clientes de "YAML::detail::node_data"
+  (compilando archivo de origen "../Source/Example.cpp")
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\xstring(527,7):
+      vea la declaración de 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'
+  
+C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Win32\packages\fluid.yaml-cpp.1.0.10\build\include\yaml-cpp\node\detail\node_data.h(108,15): warning C4251: "YAML::detail::node_data::m_scalar": "std::basic_string<char,std::char_traits<char>,std::allocator<char>>" debe tener una interfaz DLL para que la usen los clientes de "YAML::detail::node_data"
+  (compilando archivo de origen "../Source/Example.cpp")
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\xstring(527,7):
+      vea la declaración de 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'
+  
+C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Win32\packages\fluid.yaml-cpp.1.0.10\build\include\yaml-cpp\node\detail\node_data.h(112,12): warning C4251: "YAML::detail::node_data::m_sequence": "std::vector<YAML::detail::node *,std::allocator<YAML::detail::node *>>" debe tener una interfaz DLL para que la usen los clientes de "YAML::detail::node_data"
+  (compilando archivo de origen "../Source/Example.cpp")
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\vector(429,7):
+      vea la declaración de 'std::vector<YAML::detail::node *,std::allocator<YAML::detail::node *>>'
+  
+C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Win32\packages\fluid.yaml-cpp.1.0.10\build\include\yaml-cpp\node\detail\node_data.h(118,12): warning C4251: "YAML::detail::node_data::m_map": "std::vector<std::pair<YAML::detail::node *,YAML::detail::node *>,std::allocator<std::pair<YAML::detail::node *,YAML::detail::node *>>>" debe tener una interfaz DLL para que la usen los clientes de "YAML::detail::node_data"
+  (compilando archivo de origen "../Source/Example.cpp")
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\vector(429,7):
+      vea la declaración de 'std::vector<std::pair<YAML::detail::node *,YAML::detail::node *>,std::allocator<std::pair<YAML::detail::node *,YAML::detail::node *>>>'
+  
+C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Win32\packages\fluid.yaml-cpp.1.0.10\build\include\yaml-cpp\node\detail\node_data.h(122,20): warning C4251: "YAML::detail::node_data::m_undefinedPairs": "std::list<YAML::detail::node_data::kv_pair,std::allocator<std::pair<YAML::detail::node *,YAML::detail::node *>>>" debe tener una interfaz DLL para que la usen los clientes de "YAML::detail::node_data"
+  (compilando archivo de origen "../Source/Example.cpp")
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\list(755,7):
+      vea la declaración de 'std::list<YAML::detail::node_data::kv_pair,std::allocator<std::pair<YAML::detail::node *,YAML::detail::node *>>>'
+  
+C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Source\Example.cpp(401,70): warning C4244: '=': conversión de 'const long' a 'float'; posible pérdida de datos
+C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Source\Example.cpp(437,70): warning C4244: '=': conversión de 'const long' a 'float'; posible pérdida de datos
+C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Source\Example.cpp(442,60): warning C4244: '=': conversión de 'const long' a 'float'; posible pérdida de datos
+C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Source\Example.cpp(604,91): warning C4244: '=': conversión de 'long' a 'float'; posible pérdida de datos
+C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Source\Example.cpp(606,91): warning C4244: '=': conversión de 'long' a 'float'; posible pérdida de datos
+C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Source\Example.cpp(607,78): warning C4244: '=': conversión de 'const long' a 'float'; posible pérdida de datos
+C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Source\Example.cpp(610,66): warning C4244: '=': conversión de 'const long' a 'float'; posible pérdida de datos
+     Creando biblioteca .\Debug/InternalsPlugin.lib y objeto .\Debug/InternalsPlugin.exp
+Example.obj : error LNK2019: símbolo externo "__declspec(dllimport) public: __thiscall YAML::RepresentationException::RepresentationException(struct YAML::Mark const &,class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const &)" (__imp_??0RepresentationException@YAML@@QAE@ABUMark@1@ABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z) sin resolver al que se hace referencia en la función "public: __thiscall YAML::BadSubscript::BadSubscript<char [3]>(struct YAML::Mark const &,char const (&)[3])" (??$?0$$BY02D@BadSubscript@YAML@@QAE@ABUMark@1@AAY02$$CBD@Z)
+Example.obj : error LNK2019: símbolo externo "__declspec(dllimport) public: __thiscall YAML::InvalidNode::InvalidNode(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const &)" (__imp_??0InvalidNode@YAML@@QAE@ABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z) sin resolver al que se hace referencia en la función "public: int __thiscall YAML::Node::as<int>(void)const " (??$as@H@Node@YAML@@QBEHXZ)
+Example.obj : error LNK2019: símbolo externo "__declspec(dllimport) public: __thiscall YAML::BadConversion::BadConversion(struct YAML::Mark const &)" (__imp_??0BadConversion@YAML@@QAE@ABUMark@1@@Z) sin resolver al que se hace referencia en la función "public: __thiscall YAML::TypedBadConversion<int>::TypedBadConversion<int>(struct YAML::Mark const &)" (??0?$TypedBadConversion@H@YAML@@QAE@ABUMark@1@@Z)
+Example.obj : error LNK2019: símbolo externo "__declspec(dllimport) public: __thiscall YAML::BadConversion::BadConversion(class YAML::BadConversion const &)" (__imp_??0BadConversion@YAML@@QAE@ABV01@@Z) sin resolver al que se hace referencia en la función "public: __thiscall YAML::TypedBadConversion<int>::TypedBadConversion<int>(class YAML::TypedBadConversion<int> const &)" (??0?$TypedBadConversion@H@YAML@@QAE@ABV01@@Z)
+Example.obj : error LNK2019: símbolo externo "__declspec(dllimport) public: virtual __thiscall YAML::BadConversion::~BadConversion(void)" (__imp_??1BadConversion@YAML@@UAE@XZ) sin resolver al que se hace referencia en la función "public: virtual __thiscall YAML::TypedBadConversion<int>::~TypedBadConversion<int>(void)" (??1?$TypedBadConversion@H@YAML@@UAE@XZ)
+Example.obj : error LNK2019: símbolo externo "__declspec(dllimport) public: __thiscall YAML::Node::~Node(void)" (__imp_??1Node@YAML@@QAE@XZ) sin resolver al que se hace referencia en la función "public: virtual void __thiscall ExampleInternalsPlugin::Startup(void)" (?Startup@ExampleInternalsPlugin@@UAEXXZ)
+Example.obj : error LNK2019: símbolo externo "__declspec(dllimport) public: struct YAML::Mark __thiscall YAML::Node::Mark(void)const " (__imp_?Mark@Node@YAML@@QBE?AU02@XZ) sin resolver al que se hace referencia en la función "public: int __thiscall YAML::as_if<int,void>::operator()(void)const " (??R?$as_if@HX@YAML@@QBEHXZ)
+Example.obj : error LNK2019: símbolo externo "__declspec(dllimport) public: enum YAML::NodeType::value __thiscall YAML::Node::Type(void)const " (__imp_?Type@Node@YAML@@QBE?AW4value@NodeType@2@XZ) sin resolver al que se hace referencia en la función "public: class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > __thiscall YAML::as_if<class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >,void>::operator()(void)const " (??R?$as_if@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@X@YAML@@QBE?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ)
+Example.obj : error LNK2019: símbolo externo "__declspec(dllimport) public: bool __thiscall YAML::Node::IsScalar(void)const " (__imp_?IsScalar@Node@YAML@@QBE_NXZ) sin resolver al que se hace referencia en la función "public: static bool __fastcall YAML::convert<class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > >::decode(class YAML::Node const &,class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > &)" (?decode@?$convert@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@YAML@@SI_NABVNode@2@AAV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z)
+Example.obj : error LNK2019: símbolo externo "__declspec(dllimport) public: class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const & __thiscall YAML::Node::Scalar(void)const " (__imp_?Scalar@Node@YAML@@QBEABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ) sin resolver al que se hace referencia en la función "public: class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > __thiscall YAML::as_if<class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >,void>::operator()(void)const " (??R?$as_if@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@X@YAML@@QBE?AV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ)
+Example.obj : error LNK2019: símbolo externo "__declspec(dllimport) private: __thiscall YAML::Node::Node(class YAML::detail::node &,class std::shared_ptr<class YAML::detail::memory_holder>)" (__imp_??0Node@YAML@@AAE@AAVnode@detail@1@V?$shared_ptr@Vmemory_holder@detail@YAML@@@std@@@Z) sin resolver al que se hace referencia en la función "public: class YAML::Node __thiscall YAML::Node::operator[]<char [3]>(char const (&)[3])" (??$?A$$BY02D@Node@YAML@@QAE?AV01@AAY02$$CBD@Z)
+Example.obj : error LNK2019: símbolo externo "__declspec(dllimport) private: void __thiscall YAML::Node::EnsureNodeExists(void)const " (__imp_?EnsureNodeExists@Node@YAML@@ABEXXZ) sin resolver al que se hace referencia en la función "public: class YAML::Node __thiscall YAML::Node::operator[]<char [3]>(char const (&)[3])" (??$?A$$BY02D@Node@YAML@@QAE?AV01@AAY02$$CBD@Z)
+Example.obj : error LNK2019: símbolo externo "__declspec(dllimport) private: void __thiscall YAML::Node::Assign(char const *)" (__imp_?Assign@Node@YAML@@AAEXPBD@Z) sin resolver al que se hace referencia en la función "public: __thiscall YAML::Node::Node<char const *>(char const * const &)" (??$?0PBD@Node@YAML@@QAE@ABQBD@Z)
+Example.obj : error LNK2019: símbolo externo "__declspec(dllimport) public: __thiscall YAML::detail::memory_holder::memory_holder(void)" (__imp_??0memory_holder@detail@YAML@@QAE@XZ) sin resolver al que se hace referencia en la función "public: __thiscall YAML::Node::Node<char const *>(char const * const &)" (??$?0PBD@Node@YAML@@QAE@ABQBD@Z)
+Example.obj : error LNK2019: símbolo externo "__declspec(dllimport) public: class YAML::detail::node & __thiscall YAML::detail::memory_holder::create_node(void)" (__imp_?create_node@memory_holder@detail@YAML@@QAEAAVnode@23@XZ) sin resolver al que se hace referencia en la función "public: __thiscall YAML::Node::Node<char const *>(char const * const &)" (??$?0PBD@Node@YAML@@QAE@ABQBD@Z)
+Example.obj : error LNK2019: símbolo externo "__declspec(dllimport) public: void __thiscall YAML::detail::memory_holder::merge(class YAML::detail::memory_holder &)" (__imp_?merge@memory_holder@detail@YAML@@QAEXAAV123@@Z) sin resolver al que se hace referencia en la función "private: static class YAML::detail::node & __fastcall YAML::detail::node_data::convert_to_node<char [3]>(char const (&)[3],class std::shared_ptr<class YAML::detail::memory_holder>)" (??$convert_to_node@$$BY02D@node_data@detail@YAML@@CIAAVnode@12@AAY02$$CBDV?$shared_ptr@Vmemory_holder@detail@YAML@@@std@@@Z)
+Example.obj : error LNK2019: símbolo externo "__declspec(dllimport) public: __thiscall YAML::detail::memory_holder::~memory_holder(void)" (__imp_??1memory_holder@detail@YAML@@QAE@XZ) sin resolver al que se hace referencia en la función "public: void * __thiscall YAML::detail::memory_holder::`scalar deleting destructor'(unsigned int)" (??_Gmemory_holder@detail@YAML@@QAEPAXI@Z)
+Example.obj : error LNK2019: símbolo externo "__declspec(dllimport) public: void __thiscall YAML::detail::node_data::mark_defined(void)" (__imp_?mark_defined@node_data@detail@YAML@@QAEXXZ) sin resolver al que se hace referencia en la función "public: void __thiscall YAML::detail::node_ref::mark_defined(void)" (?mark_defined@node_ref@detail@YAML@@QAEXXZ)
+Example.obj : error LNK2019: símbolo externo "__declspec(dllimport) public: bool __thiscall YAML::detail::node_data::is_defined(void)const " (__imp_?is_defined@node_data@detail@YAML@@QBE_NXZ) sin resolver al que se hace referencia en la función "public: bool __thiscall YAML::detail::node_ref::is_defined(void)const " (?is_defined@node_ref@detail@YAML@@QBE_NXZ)
+Example.obj : error LNK2019: símbolo externo "__declspec(dllimport) private: void __thiscall YAML::detail::node_data::insert_map_pair(class YAML::detail::node &,class YAML::detail::node &)" (__imp_?insert_map_pair@node_data@detail@YAML@@AAEXAAVnode@23@0@Z) sin resolver al que se hace referencia en la función "public: class YAML::detail::node & __thiscall YAML::detail::node_data::get<char [3]>(char const (&)[3],class std::shared_ptr<class YAML::detail::memory_holder>)" (??$get@$$BY02D@node_data@detail@YAML@@QAEAAVnode@12@AAY02$$CBDV?$shared_ptr@Vmemory_holder@detail@YAML@@@std@@@Z)
+Example.obj : error LNK2019: símbolo externo "__declspec(dllimport) private: void __thiscall YAML::detail::node_data::convert_to_map(class std::shared_ptr<class YAML::detail::memory_holder> const &)" (__imp_?convert_to_map@node_data@detail@YAML@@AAEXABV?$shared_ptr@Vmemory_holder@detail@YAML@@@std@@@Z) sin resolver al que se hace referencia en la función "public: class YAML::detail::node & __thiscall YAML::detail::node_data::get<char [3]>(char const (&)[3],class std::shared_ptr<class YAML::detail::memory_holder>)" (??$get@$$BY02D@node_data@detail@YAML@@QAEAAVnode@12@AAY02$$CBDV?$shared_ptr@Vmemory_holder@detail@YAML@@@std@@@Z)
+Example.obj : error LNK2019: símbolo externo "__declspec(dllimport) public: static bool __fastcall YAML::convert<bool>::decode(class YAML::Node const &,bool &)" (__imp_?decode@?$convert@_N@YAML@@SI_NABVNode@2@AA_N@Z) sin resolver al que se hace referencia en la función "public: bool __thiscall YAML::as_if<bool,void>::operator()(void)const " (??R?$as_if@_NX@YAML@@QBE_NXZ)
+Example.obj : error LNK2019: símbolo externo "__declspec(dllimport) class YAML::Node __fastcall YAML::LoadFile(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> > const &)" (__imp_?LoadFile@YAML@@YI?AVNode@1@ABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z) sin resolver al que se hace referencia en la función "void __cdecl `dynamic initializer for 'config''(void)" (??__Econfig@@YAXXZ)
+Example.obj : error LNK2001: símbolo externo "public: __thiscall YAML::InvalidNode::InvalidNode(class YAML::InvalidNode const &)" (??0InvalidNode@YAML@@QAE@ABV01@@Z) sin resolver
+Example.obj : error LNK2001: símbolo externo "public: __thiscall YAML::RepresentationException::RepresentationException(class YAML::RepresentationException const &)" (??0RepresentationException@YAML@@QAE@ABV01@@Z) sin resolver
+Example.obj : error LNK2001: símbolo externo "public: __thiscall YAML::Exception::Exception(class YAML::Exception const &)" (??0Exception@YAML@@QAE@ABV01@@Z) sin resolver
+Example.obj : error LNK2001: símbolo externo "public: __thiscall YAML::BadConversion::BadConversion(class YAML::BadConversion const &)" (??0BadConversion@YAML@@QAE@ABV01@@Z) sin resolver
+Example.obj : error LNK2001: símbolo externo "public: __thiscall YAML::BadSubscript::BadSubscript(class YAML::BadSubscript const &)" (??0BadSubscript@YAML@@QAE@ABV01@@Z) sin resolver
+Example.obj : error LNK2001: símbolo externo "public: virtual __thiscall YAML::BadSubscript::~BadSubscript(void)" (??1BadSubscript@YAML@@UAE@XZ) sin resolver
+Example.obj : error LNK2001: símbolo externo "public: virtual __thiscall YAML::InvalidNode::~InvalidNode(void)" (??1InvalidNode@YAML@@UAE@XZ) sin resolver
+Example.obj : error LNK2019: símbolo externo "__declspec(dllimport) const YAML::BadSubscript::`vftable'" (__imp_??_7BadSubscript@YAML@@6B@) sin resolver al que se hace referencia en la función "public: __thiscall YAML::BadSubscript::BadSubscript<char [3]>(struct YAML::Mark const &,char const (&)[3])" (??$?0$$BY02D@BadSubscript@YAML@@QAE@ABUMark@1@AAY02$$CBD@Z)
+.\Debug\TelemetryPlugin.dll : fatal error LNK1120: 31 externos sin resolver
