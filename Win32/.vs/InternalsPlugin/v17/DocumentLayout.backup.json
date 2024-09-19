@@ -13,7 +13,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
@@ -23,7 +23,7 @@
               "RelativeDocumentMoniker": "..\\Source\\Example.cpp",
               "ToolTip": "C:\\Users\\cpast\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Source\\Example.cpp",
               "RelativeToolTip": "..\\Source\\Example.cpp",
-              "ViewState": "AgIAABIAAAAAAAAAAAAAAB8AAAAxAAAAAAAAAA==",
+              "ViewState": "AgIAALYCAAAAAAAAAAAAAC0AAAAKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-09-17T17:26:37.088Z",
               "EditorCaption": ""
