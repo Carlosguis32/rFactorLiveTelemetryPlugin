@@ -3,6 +3,9 @@
         "ip": ["", "string"],
         "port": [0, "float"]
     },
+
+    "frequency": [60, "float"],
+
     "signals": {
         "clutchRPM": [1, "float"],
         "deltaTime": [1, "float"],

@@ -29,6 +29,7 @@
 #include <iostream>						// for JSON manipulation
 #include <fstream>						// for JSON manipulation
 #include <sstream>						// parsing JSON
+#include <chrono>						// obtaining current time
 #include "rapidjson/document.h"			// JSON library
 #include <winsock2.h>					// needed for socket UDP transmission
 #include <ws2tcpip.h>					// needed for socket UDP transmission
@@ -47,6 +48,12 @@ long port;
 
 // JSON config file
 rapidjson::Document document;
+
+// Current timestamp
+long currentTimestamp = 0.0f;
+
+// Previous timestamp
+long previousTimestamp = 0.0f;
 
 // Data structure to send to the server
 struct SignalsData {
@@ -416,211 +423,217 @@ void ExampleInternalsPlugin::UpdateTelemetry( const TelemInfoV2 &info )
 	// Use the incoming data, for now I'll just write some of it to a file to a) make sure it
 	// is working, and b) explain the coordinate system a little bit (see header for more info)
 
-	// Compute some auxiliary info based on the above
-	TelemVect3 forwardVector = { -info.mOriX.z, -info.mOriY.z, -info.mOriZ.z };
-	TelemVect3    leftVector = { info.mOriX.x,  info.mOriY.x,  info.mOriZ.x };
+	currentTimestamp = (std::chrono::high_resolution_clock::now().time_since_epoch().count()) / 1000000;
 
-	// These are normalized vectors, and remember that our world Y coordinate is up.  So you can
-	// determine the current pitch and roll (w.r.t. the world x-z plane) as follows:
-	const float pitch = atan2f(forwardVector.y, sqrtf((forwardVector.x * forwardVector.x) + (forwardVector.z * forwardVector.z)));
-	const float  roll = atan2f(leftVector.y, sqrtf((leftVector.x * leftVector.x) + (leftVector.z * leftVector.z)));
-	const float radsToDeg = 57.296f;
+    if (currentTimestamp > (previousTimestamp + 60000 / document["frequency"][0].GetInt())) {
+		// Compute some auxiliary info based on the above
+		TelemVect3 forwardVector = { -info.mOriX.z, -info.mOriY.z, -info.mOriZ.z };
+		TelemVect3    leftVector = { info.mOriX.x,  info.mOriY.x,  info.mOriZ.x };
 
-	const float metersPerSec = sqrtf((info.mLocalVel.x * info.mLocalVel.x) +
-		(info.mLocalVel.y * info.mLocalVel.y) +
-		(info.mLocalVel.z * info.mLocalVel.z));
+		// These are normalized vectors, and remember that our world Y coordinate is up.  So you can
+		// determine the current pitch and roll (w.r.t. the world x-z plane) as follows:
+		const float pitch = atan2f(forwardVector.y, sqrtf((forwardVector.x * forwardVector.x) + (forwardVector.z * forwardVector.z)));
+		const float  roll = atan2f(leftVector.y, sqrtf((leftVector.x * leftVector.x) + (leftVector.z * leftVector.z)));
+		const float radsToDeg = 57.296f;
 
-	// Assign new data to data struct, checking if the signal is enabled from the JSON configuration file
-	try {
-		if (document["signals"]["clutchRPM"][0] == 1) data.clutchRPM = info.mClutchRPM;
-		if (document["signals"]["deltaTime"][0] == 1) data.deltaTime = info.mDeltaTime;
-		if (document["signals"]["engineOilTemp"][0] == 1) data.engineOilTemp = info.mEngineOilTemp;
-		if (document["signals"]["engineWaterTemp"][0] == 1) data.engineWaterTemp = info.mEngineWaterTemp;
-		if (document["signals"]["lapNumber"][0] == 1) data.lapNumber = info.mLapNumber;
-		if (document["signals"]["lapStartET"][0] == 1) data.lapStartET = info.mLapStartET;
-		if (document["signals"]["localAccelX"][0] == 1) data.localAccelX = info.mLocalAccel.x;
-		if (document["signals"]["localAccelY"][0] == 1) data.localAccelY = info.mLocalAccel.y;
-		if (document["signals"]["localAccelZ"][0] == 1) data.localAccelZ = info.mLocalAccel.z;
-		if (document["signals"]["localRotX"][0] == 1) data.localRotX = info.mLocalRot.x;
-		if (document["signals"]["localRotY"][0] == 1) data.localRotY = info.mLocalRot.y;
-		if (document["signals"]["localRotZ"][0] == 1) data.localRotZ = info.mLocalRot.z;
-		if (document["signals"]["localRotAccelX"][0] == 1) data.localRotAccelX = info.mLocalRotAccel.x;
-		if (document["signals"]["localRotAccelY"][0] == 1) data.localRotAccelY = info.mLocalRotAccel.y;
-		if (document["signals"]["localRotAccelZ"][0] == 1) data.localRotAccelZ = info.mLocalRotAccel.z;
-		if (document["signals"]["localVelX"][0] == 1) data.localVelX = info.mLocalVel.x;
-		if (document["signals"]["localVelY"][0] == 1) data.localVelY = info.mLocalVel.y;
-		if (document["signals"]["localVelZ"][0] == 1) data.localVelZ = info.mLocalVel.z;
-		if (document["signals"]["oriXX"][0] == 1) data.oriXX = info.mOriX.x;
-		if (document["signals"]["oriXY"][0] == 1) data.oriXY = info.mOriX.y;
-		if (document["signals"]["oriXZ"][0] == 1) data.oriXZ = info.mOriX.z;
-		if (document["signals"]["oriYX"][0] == 1) data.oriYX = info.mOriY.x;
-		if (document["signals"]["oriYY"][0] == 1) data.oriYY = info.mOriY.y;
-		if (document["signals"]["oriYZ"][0] == 1) data.oriYZ = info.mOriY.z;
-		if (document["signals"]["oriZX"][0] == 1) data.oriZX = info.mOriZ.x;
-		if (document["signals"]["oriZY"][0] == 1) data.oriZY = info.mOriZ.y;
-		if (document["signals"]["oriZZ"][0] == 1) data.oriZZ = info.mOriZ.z;
-		if (document["signals"]["posX"][0] == 1) data.posX = info.mPos.x;
-		if (document["signals"]["posY"][0] == 1) data.posY = info.mPos.y;
-		if (document["signals"]["posZ"][0] == 1) data.posZ = info.mPos.z;
-		if (document["signals"]["steeringArmForce"][0] == 1) data.steeringArmForce = info.mSteeringArmForce;
-		if (document["signals"]["trackName"][0] == 1) data.trackName = info.mTrackName;
-		if (document["signals"]["speed"][0] == 1) data.speed = metersPerSec;
-		if (document["signals"]["roll"][0] == 1) data.roll = roll * radsToDeg;
-		if (document["signals"]["pitch"][0] == 1) data.pitch = pitch * radsToDeg;
-		if (document["signals"]["rpm"][0] == 1) data.rpm = info.mEngineRPM;
-		if (document["signals"]["maxRPM"][0] == 1) data.maxRPM = info.mEngineMaxRPM;
-		if (document["signals"]["lapIniTime"][0] == 1) data.lapIniTime = info.mLapStartET;
-		if (document["signals"]["lapNumber"][0] == 1) data.lapNumber = info.mLapNumber;
-		if (document["signals"]["brake"][0] == 1) data.brake = info.mUnfilteredBrake;
-		if (document["signals"]["clutch"][0] == 1) data.clutch = info.mUnfilteredClutch;
-		if (document["signals"]["steering"][0] == 1) data.steering = info.mUnfilteredSteering;
-		if (document["signals"]["throttle"][0] == 1) data.throttle = info.mUnfilteredThrottle;
-		if (document["signals"]["gear"][0] == 1) data.gear = info.mGear;
-		if (document["signals"]["vehicleName"][0] == 1) data.vehicleName = info.mVehicleName;
-		if (document["signals"]["brakeTempFL"][0] == 1) data.brakeTempFL = info.mWheel[0].mBrakeTemp;
-		if (document["signals"]["brakeTempFR"][0] == 1) data.brakeTempFR = info.mWheel[1].mBrakeTemp;
-		if (document["signals"]["brakeTempRL"][0] == 1) data.brakeTempRL = info.mWheel[2].mBrakeTemp;
-		if (document["signals"]["brakeTempRR"][0] == 1) data.brakeTempRR = info.mWheel[3].mBrakeTemp;
-		if (document["signals"]["gripFactorFL"][0] == 1) data.gripFactorFL = info.mWheel[0].mGripFract;
-		if (document["signals"]["gripFactorFR"][0] == 1) data.gripFactorFR = info.mWheel[1].mGripFract;
-		if (document["signals"]["gripFactorRL"][0] == 1) data.gripFactorRL = info.mWheel[2].mGripFract;
-		if (document["signals"]["gripFactorRR"][0] == 1) data.gripFactorRR = info.mWheel[3].mGripFract;
-		if (document["signals"]["lateralForceFL"][0] == 1) data.lateralForceFL = info.mWheel[0].mLateralForce;
-		if (document["signals"]["lateralForceFR"][0] == 1) data.lateralForceFR = info.mWheel[1].mLateralForce;
-		if (document["signals"]["lateralForceRL"][0] == 1) data.lateralForceRL = info.mWheel[2].mLateralForce;
-		if (document["signals"]["lateralForceRR"][0] == 1) data.lateralForceRR = info.mWheel[3].mLateralForce;
-		if (document["signals"]["pressureFL"][0] == 1) data.pressureFL = info.mWheel[0].mPressure;
-		if (document["signals"]["pressureFR"][0] == 1) data.pressureFR = info.mWheel[1].mPressure;
-		if (document["signals"]["pressureRL"][0] == 1) data.pressureRL = info.mWheel[2].mPressure;
-		if (document["signals"]["pressureRR"][0] == 1) data.pressureRR = info.mWheel[3].mPressure;
-		if (document["signals"]["rideHeightFL"][0] == 1) data.rideHeightFL = info.mWheel[0].mRideHeight;
-		if (document["signals"]["rideHeightFR"][0] == 1) data.rideHeightFR = info.mWheel[1].mRideHeight;
-		if (document["signals"]["rideHeightRL"][0] == 1) data.rideHeightRL = info.mWheel[2].mRideHeight;
-		if (document["signals"]["rideHeightRR"][0] == 1) data.rideHeightRR = info.mWheel[3].mRideHeight;
-		if (document["signals"]["rotationFL"][0] == 1) data.rotationFL = info.mWheel[0].mRotation;
-		if (document["signals"]["rotationFR"][0] == 1) data.rotationFR = info.mWheel[1].mRotation;
-		if (document["signals"]["rotationRL"][0] == 1) data.rotationRL = info.mWheel[2].mRotation;
-		if (document["signals"]["rotationRR"][0] == 1) data.rotationRR = info.mWheel[3].mRotation;
-		if (document["signals"]["shockDeflectionFL"][0] == 1) data.shockDeflectionFL = info.mWheel[0].mSuspensionDeflection;
-		if (document["signals"]["shockDeflectionFR"][0] == 1) data.shockDeflectionFR = info.mWheel[1].mSuspensionDeflection;
-		if (document["signals"]["shockDeflectionRL"][0] == 1) data.shockDeflectionRL = info.mWheel[2].mSuspensionDeflection;
-		if (document["signals"]["shockDeflectionRR"][0] == 1) data.shockDeflectionRR = info.mWheel[3].mSuspensionDeflection;
-		if (document["signals"]["tireTempFLI"][0] == 1) data.tireTempFLI = info.mWheel[0].mTemperature[0];
-		if (document["signals"]["tireTempFLM"][0] == 1) data.tireTempFLM = info.mWheel[0].mTemperature[1];
-		if (document["signals"]["tireTempFLO"][0] == 1) data.tireTempFLO = info.mWheel[0].mTemperature[2];
-		if (document["signals"]["tireTempFRI"][0] == 1) data.tireTempFRI = info.mWheel[1].mTemperature[0];
-		if (document["signals"]["tireTempFRM"][0] == 1) data.tireTempFRM = info.mWheel[1].mTemperature[1];
-		if (document["signals"]["tireTempFRO"][0] == 1) data.tireTempFRO = info.mWheel[1].mTemperature[2];
-		if (document["signals"]["tireTempRLI"][0] == 1) data.tireTempRLI = info.mWheel[2].mTemperature[0];
-		if (document["signals"]["tireTempRLM"][0] == 1) data.tireTempRLM = info.mWheel[2].mTemperature[1];
-		if (document["signals"]["tireTempRLO"][0] == 1) data.tireTempRLO = info.mWheel[2].mTemperature[2];
-		if (document["signals"]["tireTempRRI"][0] == 1) data.tireTempRRI = info.mWheel[3].mTemperature[0];
-		if (document["signals"]["tireTempRRM"][0] == 1) data.tireTempRRM = info.mWheel[3].mTemperature[1];
-		if (document["signals"]["tireTempRRO"][0] == 1) data.tireTempRRO = info.mWheel[3].mTemperature[2];
-		if (document["signals"]["tireLoadFL"][0] == 1) data.tireLoadFL = info.mWheel[0].mTireLoad;
-		if (document["signals"]["tireLoadFR"][0] == 1) data.tireLoadFR = info.mWheel[1].mTireLoad;
-		if (document["signals"]["tireLoadRL"][0] == 1) data.tireLoadRL = info.mWheel[2].mTireLoad;
-		if (document["signals"]["tireLoadRR"][0] == 1) data.tireLoadRR = info.mWheel[3].mTireLoad;
-		if (document["signals"]["tireWearFL"][0] == 1) data.tireWearFL = info.mWheel[0].mWear;
-		if (document["signals"]["tireWearFR"][0] == 1) data.tireWearFR = info.mWheel[1].mWear;
-		if (document["signals"]["tireWearRL"][0] == 1) data.tireWearRL = info.mWheel[2].mWear;
-		if (document["signals"]["tireWearRR"][0] == 1) data.tireWearRR = info.mWheel[3].mWear;
-		if (document["signals"]["detached"][0] == 1) data.detached = info.mDetached;
-		if (document["signals"]["detachedFL"][0] == 1) data.detachedFL = info.mWheel[0].mDetached;
-		if (document["signals"]["detachedFR"][0] == 1) data.detachedFR = info.mWheel[1].mDetached;
-		if (document["signals"]["detachedRL"][0] == 1) data.detachedRL = info.mWheel[2].mDetached;
-		if (document["signals"]["detachedRR"][0] == 1) data.detachedRR = info.mWheel[3].mDetached;
-		if (document["signals"]["overheating"][0] == 1) data.overheating = info.mOverheating;
-		if (document["signals"]["flatFL"][0] == 1) data.flatFL = info.mWheel[0].mFlat;
-		if (document["signals"]["flatFR"][0] == 1) data.flatFR = info.mWheel[1].mFlat;
-		if (document["signals"]["flatRL"][0] == 1) data.flatRL = info.mWheel[2].mFlat;
-		if (document["signals"]["flatRR"][0] == 1) data.flatRR = info.mWheel[3].mFlat;
-		if (document["signals"]["surfaceFL"][0] == 1) data.surfaceFL = info.mWheel[0].mSurfaceType;
-		if (document["signals"]["surfaceFR"][0] == 1) data.surfaceFR = info.mWheel[1].mSurfaceType;
-		if (document["signals"]["surfaceRL"][0] == 1) data.surfaceRL = info.mWheel[2].mSurfaceType;
-		if (document["signals"]["surfaceRR"][0] == 1) data.surfaceRR = info.mWheel[3].mSurfaceType;
-		if (document["signals"]["lastImpactET"][0] == 1) data.lastImpactET = info.mLastImpactET;
-		if (document["signals"]["lastImpactMagnitude"][0] == 1) data.lastImpactMagnitude = info.mLastImpactMagnitude;
-		if (document["signals"]["lastImpactPosX"][0] == 1) data.lastImpactPosX = info.mLastImpactPos.x;
-		if (document["signals"]["lastImpactPosY"][0] == 1) data.lastImpactPosY = info.mLastImpactPos.y;
-		if (document["signals"]["lastImpactPosZ"][0] == 1) data.lastImpactPosZ = info.mLastImpactPos.z;
-		if (document["signals"]["scheduledStops"][0] == 1) data.scheduledStops = info.mScheduledStops;
-		if (document["signals"]["fuel"][0] == 1) data.fuel = info.mFuel;
-		if (document["signals"]["terrainNameFL"][0] == 1) data.terrainNameFL = info.mWheel[0].mTerrainName;
-		if (document["signals"]["terrainNameFR"][0] == 1) data.terrainNameFR = info.mWheel[1].mTerrainName;
-		if (document["signals"]["terrainNameRL"][0] == 1) data.terrainNameRL = info.mWheel[2].mTerrainName;
-		if (document["signals"]["terrainNameRR"][0] == 1) data.terrainNameRR = info.mWheel[3].mTerrainName;
-	}
-	catch (const std::exception& e) {
-		MessageBox(NULL, e.what(), "Error", MB_OK);
-	}
+		const float metersPerSec = sqrtf((info.mLocalVel.x * info.mLocalVel.x) +
+			(info.mLocalVel.y * info.mLocalVel.y) +
+			(info.mLocalVel.z * info.mLocalVel.z));
 
-	try {
-		// Send data to server
-		int result = sendto(sockfd, (const char*)&data, sizeof(data), 0, (const sockaddr*)&servaddr, sizeof(servaddr));
-		if (result == SOCKET_ERROR) {
-			int errorCode = WSAGetLastError();
+		// Assign new data to data struct, checking if the signal is enabled from the JSON configuration file
+		try {
+			previousTimestamp = currentTimestamp;
 
-			switch (errorCode) {
-			case WSAEACCES:
-				MessageBox(NULL, "Permission denied.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAEADDRNOTAVAIL:
-				MessageBox(NULL, "The specified address is not available.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAECONNRESET:
-				MessageBox(NULL, "Connection reset by peer.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAEFAULT:
-				MessageBox(NULL, "Bad address.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAEINTR:
-				MessageBox(NULL, "Interrupted function call.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAEINVAL:
-				MessageBox(NULL, "Invalid argument.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAEISCONN:
-				MessageBox(NULL, "Socket is already connected.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAENETDOWN:
-				MessageBox(NULL, "Network is down.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAENETUNREACH:
-				MessageBox(NULL, "Network is unreachable.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAENOBUFS:
-				MessageBox(NULL, "No buffer space available.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAENOTCONN:
-				MessageBox(NULL, "Socket is not connected.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAEOPNOTSUPP:
-				MessageBox(NULL, "Operation not supported.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAESHUTDOWN:
-				MessageBox(NULL, "Cannot send after socket shutdown.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAETIMEDOUT:
-				MessageBox(NULL, "Connection timed out.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAEWOULDBLOCK:
-				MessageBox(NULL, "Resource temporarily unavailable.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			default:
-				MessageBox(NULL, "Unknown error.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			}
+			if (document["signals"]["clutchRPM"][0] == 1) data.clutchRPM = info.mClutchRPM;
+			if (document["signals"]["deltaTime"][0] == 1) data.deltaTime = info.mDeltaTime;
+			if (document["signals"]["engineOilTemp"][0] == 1) data.engineOilTemp = info.mEngineOilTemp;
+			if (document["signals"]["engineWaterTemp"][0] == 1) data.engineWaterTemp = info.mEngineWaterTemp;
+			if (document["signals"]["lapNumber"][0] == 1) data.lapNumber = info.mLapNumber;
+			if (document["signals"]["lapStartET"][0] == 1) data.lapStartET = info.mLapStartET;
+			if (document["signals"]["localAccelX"][0] == 1) data.localAccelX = info.mLocalAccel.x;
+			if (document["signals"]["localAccelY"][0] == 1) data.localAccelY = info.mLocalAccel.y;
+			if (document["signals"]["localAccelZ"][0] == 1) data.localAccelZ = info.mLocalAccel.z;
+			if (document["signals"]["localRotX"][0] == 1) data.localRotX = info.mLocalRot.x;
+			if (document["signals"]["localRotY"][0] == 1) data.localRotY = info.mLocalRot.y;
+			if (document["signals"]["localRotZ"][0] == 1) data.localRotZ = info.mLocalRot.z;
+			if (document["signals"]["localRotAccelX"][0] == 1) data.localRotAccelX = info.mLocalRotAccel.x;
+			if (document["signals"]["localRotAccelY"][0] == 1) data.localRotAccelY = info.mLocalRotAccel.y;
+			if (document["signals"]["localRotAccelZ"][0] == 1) data.localRotAccelZ = info.mLocalRotAccel.z;
+			if (document["signals"]["localVelX"][0] == 1) data.localVelX = info.mLocalVel.x;
+			if (document["signals"]["localVelY"][0] == 1) data.localVelY = info.mLocalVel.y;
+			if (document["signals"]["localVelZ"][0] == 1) data.localVelZ = info.mLocalVel.z;
+			if (document["signals"]["oriXX"][0] == 1) data.oriXX = info.mOriX.x;
+			if (document["signals"]["oriXY"][0] == 1) data.oriXY = info.mOriX.y;
+			if (document["signals"]["oriXZ"][0] == 1) data.oriXZ = info.mOriX.z;
+			if (document["signals"]["oriYX"][0] == 1) data.oriYX = info.mOriY.x;
+			if (document["signals"]["oriYY"][0] == 1) data.oriYY = info.mOriY.y;
+			if (document["signals"]["oriYZ"][0] == 1) data.oriYZ = info.mOriY.z;
+			if (document["signals"]["oriZX"][0] == 1) data.oriZX = info.mOriZ.x;
+			if (document["signals"]["oriZY"][0] == 1) data.oriZY = info.mOriZ.y;
+			if (document["signals"]["oriZZ"][0] == 1) data.oriZZ = info.mOriZ.z;
+			if (document["signals"]["posX"][0] == 1) data.posX = info.mPos.x;
+			if (document["signals"]["posY"][0] == 1) data.posY = info.mPos.y;
+			if (document["signals"]["posZ"][0] == 1) data.posZ = info.mPos.z;
+			if (document["signals"]["steeringArmForce"][0] == 1) data.steeringArmForce = info.mSteeringArmForce;
+			if (document["signals"]["trackName"][0] == 1) data.trackName = info.mTrackName;
+			if (document["signals"]["speed"][0] == 1) data.speed = metersPerSec;
+			if (document["signals"]["roll"][0] == 1) data.roll = roll * radsToDeg;
+			if (document["signals"]["pitch"][0] == 1) data.pitch = pitch * radsToDeg;
+			if (document["signals"]["rpm"][0] == 1) data.rpm = info.mEngineRPM;
+			if (document["signals"]["maxRPM"][0] == 1) data.maxRPM = info.mEngineMaxRPM;
+			if (document["signals"]["lapIniTime"][0] == 1) data.lapIniTime = info.mLapStartET;
+			if (document["signals"]["lapNumber"][0] == 1) data.lapNumber = info.mLapNumber;
+			if (document["signals"]["brake"][0] == 1) data.brake = info.mUnfilteredBrake;
+			if (document["signals"]["clutch"][0] == 1) data.clutch = info.mUnfilteredClutch;
+			if (document["signals"]["steering"][0] == 1) data.steering = info.mUnfilteredSteering;
+			if (document["signals"]["throttle"][0] == 1) data.throttle = info.mUnfilteredThrottle;
+			if (document["signals"]["gear"][0] == 1) data.gear = info.mGear;
+			if (document["signals"]["vehicleName"][0] == 1) data.vehicleName = info.mVehicleName;
+			if (document["signals"]["brakeTempFL"][0] == 1) data.brakeTempFL = info.mWheel[0].mBrakeTemp;
+			if (document["signals"]["brakeTempFR"][0] == 1) data.brakeTempFR = info.mWheel[1].mBrakeTemp;
+			if (document["signals"]["brakeTempRL"][0] == 1) data.brakeTempRL = info.mWheel[2].mBrakeTemp;
+			if (document["signals"]["brakeTempRR"][0] == 1) data.brakeTempRR = info.mWheel[3].mBrakeTemp;
+			if (document["signals"]["gripFactorFL"][0] == 1) data.gripFactorFL = info.mWheel[0].mGripFract;
+			if (document["signals"]["gripFactorFR"][0] == 1) data.gripFactorFR = info.mWheel[1].mGripFract;
+			if (document["signals"]["gripFactorRL"][0] == 1) data.gripFactorRL = info.mWheel[2].mGripFract;
+			if (document["signals"]["gripFactorRR"][0] == 1) data.gripFactorRR = info.mWheel[3].mGripFract;
+			if (document["signals"]["lateralForceFL"][0] == 1) data.lateralForceFL = info.mWheel[0].mLateralForce;
+			if (document["signals"]["lateralForceFR"][0] == 1) data.lateralForceFR = info.mWheel[1].mLateralForce;
+			if (document["signals"]["lateralForceRL"][0] == 1) data.lateralForceRL = info.mWheel[2].mLateralForce;
+			if (document["signals"]["lateralForceRR"][0] == 1) data.lateralForceRR = info.mWheel[3].mLateralForce;
+			if (document["signals"]["pressureFL"][0] == 1) data.pressureFL = info.mWheel[0].mPressure;
+			if (document["signals"]["pressureFR"][0] == 1) data.pressureFR = info.mWheel[1].mPressure;
+			if (document["signals"]["pressureRL"][0] == 1) data.pressureRL = info.mWheel[2].mPressure;
+			if (document["signals"]["pressureRR"][0] == 1) data.pressureRR = info.mWheel[3].mPressure;
+			if (document["signals"]["rideHeightFL"][0] == 1) data.rideHeightFL = info.mWheel[0].mRideHeight;
+			if (document["signals"]["rideHeightFR"][0] == 1) data.rideHeightFR = info.mWheel[1].mRideHeight;
+			if (document["signals"]["rideHeightRL"][0] == 1) data.rideHeightRL = info.mWheel[2].mRideHeight;
+			if (document["signals"]["rideHeightRR"][0] == 1) data.rideHeightRR = info.mWheel[3].mRideHeight;
+			if (document["signals"]["rotationFL"][0] == 1) data.rotationFL = info.mWheel[0].mRotation;
+			if (document["signals"]["rotationFR"][0] == 1) data.rotationFR = info.mWheel[1].mRotation;
+			if (document["signals"]["rotationRL"][0] == 1) data.rotationRL = info.mWheel[2].mRotation;
+			if (document["signals"]["rotationRR"][0] == 1) data.rotationRR = info.mWheel[3].mRotation;
+			if (document["signals"]["shockDeflectionFL"][0] == 1) data.shockDeflectionFL = info.mWheel[0].mSuspensionDeflection;
+			if (document["signals"]["shockDeflectionFR"][0] == 1) data.shockDeflectionFR = info.mWheel[1].mSuspensionDeflection;
+			if (document["signals"]["shockDeflectionRL"][0] == 1) data.shockDeflectionRL = info.mWheel[2].mSuspensionDeflection;
+			if (document["signals"]["shockDeflectionRR"][0] == 1) data.shockDeflectionRR = info.mWheel[3].mSuspensionDeflection;
+			if (document["signals"]["tireTempFLI"][0] == 1) data.tireTempFLI = info.mWheel[0].mTemperature[0];
+			if (document["signals"]["tireTempFLM"][0] == 1) data.tireTempFLM = info.mWheel[0].mTemperature[1];
+			if (document["signals"]["tireTempFLO"][0] == 1) data.tireTempFLO = info.mWheel[0].mTemperature[2];
+			if (document["signals"]["tireTempFRI"][0] == 1) data.tireTempFRI = info.mWheel[1].mTemperature[0];
+			if (document["signals"]["tireTempFRM"][0] == 1) data.tireTempFRM = info.mWheel[1].mTemperature[1];
+			if (document["signals"]["tireTempFRO"][0] == 1) data.tireTempFRO = info.mWheel[1].mTemperature[2];
+			if (document["signals"]["tireTempRLI"][0] == 1) data.tireTempRLI = info.mWheel[2].mTemperature[0];
+			if (document["signals"]["tireTempRLM"][0] == 1) data.tireTempRLM = info.mWheel[2].mTemperature[1];
+			if (document["signals"]["tireTempRLO"][0] == 1) data.tireTempRLO = info.mWheel[2].mTemperature[2];
+			if (document["signals"]["tireTempRRI"][0] == 1) data.tireTempRRI = info.mWheel[3].mTemperature[0];
+			if (document["signals"]["tireTempRRM"][0] == 1) data.tireTempRRM = info.mWheel[3].mTemperature[1];
+			if (document["signals"]["tireTempRRO"][0] == 1) data.tireTempRRO = info.mWheel[3].mTemperature[2];
+			if (document["signals"]["tireLoadFL"][0] == 1) data.tireLoadFL = info.mWheel[0].mTireLoad;
+			if (document["signals"]["tireLoadFR"][0] == 1) data.tireLoadFR = info.mWheel[1].mTireLoad;
+			if (document["signals"]["tireLoadRL"][0] == 1) data.tireLoadRL = info.mWheel[2].mTireLoad;
+			if (document["signals"]["tireLoadRR"][0] == 1) data.tireLoadRR = info.mWheel[3].mTireLoad;
+			if (document["signals"]["tireWearFL"][0] == 1) data.tireWearFL = info.mWheel[0].mWear;
+			if (document["signals"]["tireWearFR"][0] == 1) data.tireWearFR = info.mWheel[1].mWear;
+			if (document["signals"]["tireWearRL"][0] == 1) data.tireWearRL = info.mWheel[2].mWear;
+			if (document["signals"]["tireWearRR"][0] == 1) data.tireWearRR = info.mWheel[3].mWear;
+			if (document["signals"]["detached"][0] == 1) data.detached = info.mDetached;
+			if (document["signals"]["detachedFL"][0] == 1) data.detachedFL = info.mWheel[0].mDetached;
+			if (document["signals"]["detachedFR"][0] == 1) data.detachedFR = info.mWheel[1].mDetached;
+			if (document["signals"]["detachedRL"][0] == 1) data.detachedRL = info.mWheel[2].mDetached;
+			if (document["signals"]["detachedRR"][0] == 1) data.detachedRR = info.mWheel[3].mDetached;
+			if (document["signals"]["overheating"][0] == 1) data.overheating = info.mOverheating;
+			if (document["signals"]["flatFL"][0] == 1) data.flatFL = info.mWheel[0].mFlat;
+			if (document["signals"]["flatFR"][0] == 1) data.flatFR = info.mWheel[1].mFlat;
+			if (document["signals"]["flatRL"][0] == 1) data.flatRL = info.mWheel[2].mFlat;
+			if (document["signals"]["flatRR"][0] == 1) data.flatRR = info.mWheel[3].mFlat;
+			if (document["signals"]["surfaceFL"][0] == 1) data.surfaceFL = info.mWheel[0].mSurfaceType;
+			if (document["signals"]["surfaceFR"][0] == 1) data.surfaceFR = info.mWheel[1].mSurfaceType;
+			if (document["signals"]["surfaceRL"][0] == 1) data.surfaceRL = info.mWheel[2].mSurfaceType;
+			if (document["signals"]["surfaceRR"][0] == 1) data.surfaceRR = info.mWheel[3].mSurfaceType;
+			if (document["signals"]["lastImpactET"][0] == 1) data.lastImpactET = info.mLastImpactET;
+			if (document["signals"]["lastImpactMagnitude"][0] == 1) data.lastImpactMagnitude = info.mLastImpactMagnitude;
+			if (document["signals"]["lastImpactPosX"][0] == 1) data.lastImpactPosX = info.mLastImpactPos.x;
+			if (document["signals"]["lastImpactPosY"][0] == 1) data.lastImpactPosY = info.mLastImpactPos.y;
+			if (document["signals"]["lastImpactPosZ"][0] == 1) data.lastImpactPosZ = info.mLastImpactPos.z;
+			if (document["signals"]["scheduledStops"][0] == 1) data.scheduledStops = info.mScheduledStops;
+			if (document["signals"]["fuel"][0] == 1) data.fuel = info.mFuel;
+			if (document["signals"]["terrainNameFL"][0] == 1) data.terrainNameFL = info.mWheel[0].mTerrainName;
+			if (document["signals"]["terrainNameFR"][0] == 1) data.terrainNameFR = info.mWheel[1].mTerrainName;
+			if (document["signals"]["terrainNameRL"][0] == 1) data.terrainNameRL = info.mWheel[2].mTerrainName;
+			if (document["signals"]["terrainNameRR"][0] == 1) data.terrainNameRR = info.mWheel[3].mTerrainName;
+		}
+		catch (const std::exception& e) {
+			MessageBox(NULL, e.what(), "Error", MB_OK);
 		}
 
-	}
-	catch (const std::exception& e) {
-		MessageBeep(MB_ICONERROR);
-		MessageBox(NULL, e.what(), "Error", MB_OK);
+		try {
+			// Send data to server
+			int result = sendto(sockfd, (const char*)&data, sizeof(data), 0, (const sockaddr*)&servaddr, sizeof(servaddr));
+			if (result == SOCKET_ERROR) {
+				int errorCode = WSAGetLastError();
 
-		// Close the socket in case of error
-		closesocket(sockfd);
-		WSACleanup();
+				switch (errorCode) {
+				case WSAEACCES:
+					MessageBox(NULL, "Permission denied.", "Error", MB_OK | MB_ICONERROR);
+					break;
+				case WSAEADDRNOTAVAIL:
+					MessageBox(NULL, "The specified address is not available.", "Error", MB_OK | MB_ICONERROR);
+					break;
+				case WSAECONNRESET:
+					MessageBox(NULL, "Connection reset by peer.", "Error", MB_OK | MB_ICONERROR);
+					break;
+				case WSAEFAULT:
+					MessageBox(NULL, "Bad address.", "Error", MB_OK | MB_ICONERROR);
+					break;
+				case WSAEINTR:
+					MessageBox(NULL, "Interrupted function call.", "Error", MB_OK | MB_ICONERROR);
+					break;
+				case WSAEINVAL:
+					MessageBox(NULL, "Invalid argument.", "Error", MB_OK | MB_ICONERROR);
+					break;
+				case WSAEISCONN:
+					MessageBox(NULL, "Socket is already connected.", "Error", MB_OK | MB_ICONERROR);
+					break;
+				case WSAENETDOWN:
+					MessageBox(NULL, "Network is down.", "Error", MB_OK | MB_ICONERROR);
+					break;
+				case WSAENETUNREACH:
+					MessageBox(NULL, "Network is unreachable.", "Error", MB_OK | MB_ICONERROR);
+					break;
+				case WSAENOBUFS:
+					MessageBox(NULL, "No buffer space available.", "Error", MB_OK | MB_ICONERROR);
+					break;
+				case WSAENOTCONN:
+					MessageBox(NULL, "Socket is not connected.", "Error", MB_OK | MB_ICONERROR);
+					break;
+				case WSAEOPNOTSUPP:
+					MessageBox(NULL, "Operation not supported.", "Error", MB_OK | MB_ICONERROR);
+					break;
+				case WSAESHUTDOWN:
+					MessageBox(NULL, "Cannot send after socket shutdown.", "Error", MB_OK | MB_ICONERROR);
+					break;
+				case WSAETIMEDOUT:
+					MessageBox(NULL, "Connection timed out.", "Error", MB_OK | MB_ICONERROR);
+					break;
+				case WSAEWOULDBLOCK:
+					MessageBox(NULL, "Resource temporarily unavailable.", "Error", MB_OK | MB_ICONERROR);
+					break;
+				default:
+					MessageBox(NULL, "Unknown error.", "Error", MB_OK | MB_ICONERROR);
+					break;
+				}
+			}
+
+		}
+		catch (const std::exception& e) {
+			MessageBeep(MB_ICONERROR);
+			MessageBox(NULL, e.what(), "Error", MB_OK);
+
+			// Close the socket in case of error
+			closesocket(sockfd);
+			WSACleanup();
+		}
 	}
 }
 

@@ -1,9 +1,9 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\cpast\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Win32\\",
+  "WorkspaceRootPath": "C:\\Users\\Carlos\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Win32\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{D0C09F9B-E1D6-4A04-B698-190F52BBA156}|InternalsPlugin.vcxproj|C:\\Users\\cpast\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Source\\Example.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{D0C09F9B-E1D6-4A04-B698-190F52BBA156}|InternalsPlugin.vcxproj|C:\\Users\\Carlos\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Source\\Example.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -19,13 +19,13 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Example.cpp",
-              "DocumentMoniker": "C:\\Users\\cpast\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Source\\Example.cpp",
+              "DocumentMoniker": "C:\\Users\\Carlos\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Source\\Example.cpp",
               "RelativeDocumentMoniker": "..\\Source\\Example.cpp",
-              "ToolTip": "C:\\Users\\cpast\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Source\\Example.cpp",
+              "ToolTip": "C:\\Users\\Carlos\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Source\\Example.cpp",
               "RelativeToolTip": "..\\Source\\Example.cpp",
-              "ViewState": "AgIAABMAAAAAAAAAAAAAANMAAAATAAAAAAAAAA==",
+              "ViewState": "AgIAAJ8BAAAAAAAAAAAAAKkBAABlAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-09-17T17:26:37.088Z",
+              "WhenOpened": "2024-09-25T07:10:00.047Z",
               "EditorCaption": ""
             }
           ]
