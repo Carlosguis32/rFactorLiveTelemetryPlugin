@@ -91,7 +91,7 @@ class ExampleInternalsPlugin : public InternalsPluginV3
 
   // GAME OUTPUT
   bool WantsTelemetryUpdates() { return( true ); } // CHANGE TO TRUE TO ENABLE TELEMETRY EXAMPLE!
-  void UpdateTelemetry( const TelemInfoV2 &info );
+  void UpdateTelemetry( TelemInfoV2 &info );
 
   bool WantsGraphicsUpdates() { return( false ); } // CHANGE TO TRUE TO ENABLE GRAPHICS EXAMPLE!
   void UpdateGraphics( const GraphicsInfoV2 &info );

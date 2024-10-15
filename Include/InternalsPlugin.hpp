@@ -98,6 +98,9 @@ struct TelemInfoBase
   float mEngineWaterTemp;        // Celsius
   float mEngineOilTemp;          // Celsius
   float mClutchRPM;              // clutch RPM
+  float mPitch;                  // pitch angle (deg)
+  float mRoll;					 // roll angle (deg)
+  float mSpeed;                  // speed (meters/sec)
 
   // Driver input
   float mUnfilteredThrottle;     // ranges  0.0-1.0

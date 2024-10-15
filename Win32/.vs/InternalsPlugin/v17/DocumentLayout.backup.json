@@ -1,16 +1,15 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Carlos\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Win32\\",
+  "WorkspaceRootPath": "C:\\Users\\cpast\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Win32\\",
   "Documents": [
     {
-<<<<<<< Updated upstream
-      "AbsoluteMoniker": "D:0:0:{D0C09F9B-E1D6-4A04-B698-190F52BBA156}|InternalsPlugin.vcxproj|C:\\Users\\cpast\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Source\\Example.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{D0C09F9B-E1D6-4A04-B698-190F52BBA156}|InternalsPlugin.vcxproj|C:\\Users\\cpast\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Include\\Example.hpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{D0C09F9B-E1D6-4A04-B698-190F52BBA156}|InternalsPlugin.vcxproj|C:\\Users\\cpast\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Include\\Example.hpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-=======
-      "AbsoluteMoniker": "D:0:0:{D0C09F9B-E1D6-4A04-B698-190F52BBA156}|InternalsPlugin.vcxproj|C:\\Users\\Carlos\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Source\\Example.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
->>>>>>> Stashed changes
+      "AbsoluteMoniker": "D:0:0:{D0C09F9B-E1D6-4A04-B698-190F52BBA156}|InternalsPlugin.vcxproj|C:\\Users\\cpast\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Include\\InternalsPlugin.hpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D0C09F9B-E1D6-4A04-B698-190F52BBA156}|InternalsPlugin.vcxproj|C:\\Users\\cpast\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Source\\Example.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -20,38 +19,45 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "Example.hpp",
               "DocumentMoniker": "C:\\Users\\cpast\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Include\\Example.hpp",
               "RelativeDocumentMoniker": "..\\Include\\Example.hpp",
               "ToolTip": "C:\\Users\\cpast\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Include\\Example.hpp",
               "RelativeToolTip": "..\\Include\\Example.hpp",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAABgAAAAiAAAAAAAAAA==",
+              "ViewState": "AgIAAC0AAAAAAAAAAAAAAF0AAAAYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2024-09-29T10:02:24.949Z",
+              "WhenOpened": "2024-10-15T22:30:06.23Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
+              "Title": "InternalsPlugin.hpp",
+              "DocumentMoniker": "C:\\Users\\cpast\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Include\\InternalsPlugin.hpp",
+              "RelativeDocumentMoniker": "..\\Include\\InternalsPlugin.hpp",
+              "ToolTip": "C:\\Users\\cpast\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Include\\InternalsPlugin.hpp",
+              "RelativeToolTip": "..\\Include\\InternalsPlugin.hpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEYAAAALAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-10-15T22:20:03.22Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "Example.cpp",
-              "DocumentMoniker": "C:\\Users\\Carlos\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Source\\Example.cpp",
+              "DocumentMoniker": "C:\\Users\\cpast\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Source\\Example.cpp",
               "RelativeDocumentMoniker": "..\\Source\\Example.cpp",
-              "ToolTip": "C:\\Users\\Carlos\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Source\\Example.cpp",
+              "ToolTip": "C:\\Users\\cpast\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Source\\Example.cpp",
               "RelativeToolTip": "..\\Source\\Example.cpp",
-<<<<<<< Updated upstream
-              "ViewState": "AgIAACwAAAAAAAAAAAAAADEAAAAdAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAH8BAAACAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-09-28T19:22:22.971Z",
-=======
-              "ViewState": "AgIAAJ8BAAAAAAAAAAAAAKkBAABlAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-09-25T07:10:00.047Z",
->>>>>>> Stashed changes
+              "WhenOpened": "2024-10-15T16:11:22.405Z",
               "EditorCaption": ""
             }
           ]
