@@ -39,7 +39,11 @@
               "RelativeDocumentMoniker": "..\\Source\\Example.cpp",
               "ToolTip": "C:\\Users\\cpast\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Source\\Example.cpp",
               "RelativeToolTip": "..\\Source\\Example.cpp",
+<<<<<<< Updated upstream
               "ViewState": "AgIAACECAAAAAAAAAAAAAMsBAABSAAAAAAAAAA==",
+=======
+              "ViewState": "AgIAAJoBAAAAAAAAAAAAAKYBAAASAAAAAAAAAA==",
+>>>>>>> Stashed changes
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-09-28T19:22:22.971Z",
               "EditorCaption": ""

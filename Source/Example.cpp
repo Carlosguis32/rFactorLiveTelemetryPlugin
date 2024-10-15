@@ -1,20 +1,20 @@
-//ÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜÜ
-//Ý                                                                         Þ
-//Ý Module: Internals Example Source File                                   Þ
-//Ý                                                                         Þ
-//Ý Description: Declarations for the Internals Example Plugin              Þ
-//Ý                                                                         Þ
-//Ý                                                                         Þ
-//Ý This source code module, and all information, data, and algorithms      Þ
-//Ý associated with it, are part of CUBE technology (tm).                   Þ
-//Ý                 PROPRIETARY AND CONFIDENTIAL                            Þ
-//Ý Copyright (c) 1996-2007 Image Space Incorporated.  All rights reserved. Þ
-//Ý                                                                         Þ
-//Ý                                                                         Þ
-//Ý Change history:                                                         Þ
-//Ý   tag.2005.11.30: created                                               Þ
-//Ý                                                                         Þ
-//ßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßßß
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+//ï¿½                                                                         ï¿½
+//ï¿½ Module: Internals Example Source File                                   ï¿½
+//ï¿½                                                                         ï¿½
+//ï¿½ Description: Declarations for the Internals Example Plugin              ï¿½
+//ï¿½                                                                         ï¿½
+//ï¿½                                                                         ï¿½
+//ï¿½ This source code module, and all information, data, and algorithms      ï¿½
+//ï¿½ associated with it, are part of CUBE technology (tm).                   ï¿½
+//ï¿½                 PROPRIETARY AND CONFIDENTIAL                            ï¿½
+//ï¿½ Copyright (c) 1996-2007 Image Space Incorporated.  All rights reserved. ï¿½
+//ï¿½                                                                         ï¿½
+//ï¿½                                                                         ï¿½
+//ï¿½ Change history:                                                         ï¿½
+//ï¿½   tag.2005.11.30: created                                               ï¿½
+//ï¿½                                                                         ï¿½
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 // Needed for winsock libraries
 #ifndef WIN32_LEAN_AND_MEAN
@@ -31,6 +31,7 @@
 #include <sstream>						// parsing JSON
 #include <chrono>						// obtaining current time
 #include "rapidjson/document.h"			// JSON library
+#include <boost/pfr.hpp>				// For struct reflection
 #include <winsock2.h>					// needed for socket UDP transmission
 #include <ws2tcpip.h>					// needed for socket UDP transmission
 #pragma comment(lib, "Ws2_32.lib")		// needed for socket UDP transmission
@@ -54,12 +55,12 @@ long long previousTimestamp = 0.0f;
 
 // Data structure to send to the server
 struct SignalsData {
-	float clutchRPM;				// Clutch RPM
-	float deltaTime;				// Time between frames
-	float engineOilTemp; 			// Engine oil temperature	
-	float engineWaterTemp; 			// Engine water temperature
-	float lapStartET;				// Lap start elapsed time
-	float lapDistance;				// Lap distance
+	float mClutchRPM;				// Clutch RPM
+	float mDeltaTime;				// Time between frames
+	float mEngineOilTemp; 			// Engine oil temperature	
+	float mEngineWaterTemp; 		// Engine water temperature
+	float mLapStartET;				// Lap start elapsed time
+	float mLapDist;					// Lap distance
 	float bestS1; 					// Best sector 1 time
 	float bestS2; 					// Best sector 2 time (plus sector 1)
 	float bestLap; 					// Best laptime
@@ -68,9 +69,9 @@ struct SignalsData {
 	float lastLap; 					// Last laptime
 	float currentS1; 				// Current sector 1 time
 	float currentS2; 				// Current sector 2 time (plus sector 1)
-	float localAccelX;				// Local X acceleration
-	float localAccelY;				// Local Y acceleration
-	float localAccelZ;				// Local Z acceleration
+	float mLocalAccel_x;			// Local X acceleration
+	float mLocalAccel_y;			// Local Y acceleration
+	float mLocalAccel_z;			// Local Z acceleration
 	float localRotX;				// Local X rotation
 	float localRotY;				// Local Y rotation
 	float localRotZ;				// Local Z rotation
@@ -433,6 +434,17 @@ void ExampleInternalsPlugin::ExitRealtime()
   //WriteToAllExampleOutputFiles( "a", "---EXITREALTIME---" );
 }
 
+
+
+#define AssignVariableName(var) \
+	if (var.find("_"))
+	if (document["signals"][#var][0] == 1) data.#var = info.#var; \
+
+constexpr auto fieldCount = boost::pfr::tuple_size<SignalsData>::value;
+
+
+
+
 void ExampleInternalsPlugin::UpdateTelemetry( const TelemInfoV2 &info )
 {
 	// This function is called 90 times per seconds in manual mode and 40 times per seconds in I.A mode (approximate time)
@@ -457,15 +469,12 @@ void ExampleInternalsPlugin::UpdateTelemetry( const TelemInfoV2 &info )
 
 		// Assign new data to data struct, checking if the signal is enabled from the JSON configuration file
 		try {
-			if (document["signals"]["clutchRPM"][0] == 1) data.clutchRPM = info.mClutchRPM;
-			if (document["signals"]["deltaTime"][0] == 1) data.deltaTime = info.mDeltaTime;
-			if (document["signals"]["engineOilTemp"][0] == 1) data.engineOilTemp = info.mEngineOilTemp;
-			if (document["signals"]["engineWaterTemp"][0] == 1) data.engineWaterTemp = info.mEngineWaterTemp;
-			if (document["signals"]["lapNumber"][0] == 1) data.lapNumber = info.mLapNumber;
-			if (document["signals"]["lapStartET"][0] == 1) data.lapStartET = info.mLapStartET;
-			if (document["signals"]["localAccelX"][0] == 1) data.localAccelX = info.mLocalAccel.x;
-			if (document["signals"]["localAccelY"][0] == 1) data.localAccelY = info.mLocalAccel.y;
-			if (document["signals"]["localAccelZ"][0] == 1) data.localAccelZ = info.mLocalAccel.z;
+			previousTimestamp = currentTimestamp;
+
+			boost::pfr::for_each_field(SignalsData{}, [](auto& field, std::size_t idx) {
+				AssignVariableName(field);
+			});
+
 			if (document["signals"]["localRotX"][0] == 1) data.localRotX = info.mLocalRot.x;
 			if (document["signals"]["localRotY"][0] == 1) data.localRotY = info.mLocalRot.y;
 			if (document["signals"]["localRotZ"][0] == 1) data.localRotZ = info.mLocalRot.z;
@@ -711,7 +720,6 @@ void ExampleInternalsPlugin::UpdateScoring( const ScoringInfoV2 &info )
 	// Note: function is called twice per second now (instead of once per second in previous versions)
 	// Assign new data to data struct, checking if the signal is enabled from the JSON configuration file
 	try {
-		if (document["signals"]["lapDistance"][0] == 1) data.lapDistance = info.mLapDist;
 		if (document["signals"]["bestS1"][0] == 1) data.bestS1 = info.mVehicle->mBestSector1;
 		if (document["signals"]["bestS2"][0] == 1) data.bestS2 = info.mVehicle->mBestSector2;
 		if (document["signals"]["bestLap"][0] == 1) data.bestLap = info.mVehicle->mBestLapTime;
@@ -761,58 +769,7 @@ void ExampleInternalsPlugin::UpdateScoring( const ScoringInfoV2 &info )
 		// Send data to server
 		int result = sendto(sockfd, (const char*)&data, sizeof(data), 0, (const sockaddr*)&servaddr, sizeof(servaddr));
 		if (result == SOCKET_ERROR) {
-			int errorCode = WSAGetLastError();
-
-			switch (errorCode) {
-			case WSAEACCES:
-				MessageBox(NULL, "Permission denied.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAEADDRNOTAVAIL:
-				MessageBox(NULL, "The specified address is not available.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAECONNRESET:
-				MessageBox(NULL, "Connection reset by peer.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAEFAULT:
-				MessageBox(NULL, "Bad address.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAEINTR:
-				MessageBox(NULL, "Interrupted function call.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAEINVAL:
-				MessageBox(NULL, "Invalid argument.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAEISCONN:
-				MessageBox(NULL, "Socket is already connected.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAENETDOWN:
-				MessageBox(NULL, "Network is down.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAENETUNREACH:
-				MessageBox(NULL, "Network is unreachable.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAENOBUFS:
-				MessageBox(NULL, "No buffer space available.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAENOTCONN:
-				MessageBox(NULL, "Socket is not connected.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAEOPNOTSUPP:
-				MessageBox(NULL, "Operation not supported.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAESHUTDOWN:
-				MessageBox(NULL, "Cannot send after socket shutdown.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAETIMEDOUT:
-				MessageBox(NULL, "Connection timed out.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			case WSAEWOULDBLOCK:
-				MessageBox(NULL, "Resource temporarily unavailable.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			default:
-				MessageBox(NULL, "Unknown error.", "Error", MB_OK | MB_ICONERROR);
-				break;
-			}
+			MessageBox(NULL, ("Data could not be sent to the server. Error Code: " + std::to_string(WSAGetLastError())).c_str(), "Error", MB_OK | MB_ICONERROR);
 		}
 
 	}
