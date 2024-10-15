@@ -21,6 +21,9 @@
 
 #include "InternalsPlugin.hpp"
 
+// To determine the frequency at which data should be sent to the server
+long long getCurrentTimestampMs();
+bool shouldSendData();
 
 // This is used for app to find out information about the plugin
 class InternalsPluginInfo : public PluginObjectInfo

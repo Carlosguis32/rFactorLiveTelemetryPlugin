@@ -49,11 +49,8 @@ long port;
 // JSON config file
 rapidjson::Document document;
 
-// Current timestamp
-long currentTimestamp = 0.0f;
-
 // Previous timestamp
-long previousTimestamp = 0.0f;
+long long previousTimestamp = 0.0f;
 
 // Data structure to send to the server
 struct SignalsData {
@@ -224,6 +221,25 @@ sockaddr_in servaddr;
 // Data to send
 SignalsData data;
 
+long long getCurrentTimestampMs() {
+	return std::chrono::duration_cast<std::chrono::milliseconds>(
+		std::chrono::high_resolution_clock::now().time_since_epoch()
+	).count();
+}
+
+bool shouldSendData() {
+	long long currentTimestamp = getCurrentTimestampMs();
+	int frecuenciaPorSegundo = document["frequency"][0].GetInt();
+
+	long long intervaloMs = 1000 / frecuenciaPorSegundo;
+
+	if (currentTimestamp >= (previousTimestamp + intervaloMs)) {
+		previousTimestamp = currentTimestamp;
+		return true;
+	}
+	return false;
+}
+
 // interface to plugin information
 extern "C" __declspec(dllexport)
 const char* __cdecl GetPluginName() { return g_szPluginName; }
@@ -318,12 +334,13 @@ void ExampleInternalsPlugin::Startup()
 
 	// Read JSON configuration file
 	try {
-		const std::string filename = "Plugins/telemetryConfigrFactor.json";
+		const std::string filename = "Plugins/telemetryConfig.json";
 
 		std::ifstream file(filename);
 		if (!file.is_open()) {
 			MessageBeep(MB_ICONERROR);
-			MessageBox(NULL, "Configuration file could not be opened, check that telemetryConfigrFactor.json is in rFactor Plugins folder", "Error", MB_OK);
+			std::string errorMessage = "Configuration file could not be opened, check that " + filename + " exists";
+			MessageBox(NULL, errorMessage.c_str(), "Error", MB_OK);
 		}
 
 		// Parse JSON file
@@ -423,9 +440,7 @@ void ExampleInternalsPlugin::UpdateTelemetry( const TelemInfoV2 &info )
 	// Use the incoming data, for now I'll just write some of it to a file to a) make sure it
 	// is working, and b) explain the coordinate system a little bit (see header for more info)
 
-	currentTimestamp = (std::chrono::high_resolution_clock::now().time_since_epoch().count()) / 1000000;
-
-    if (currentTimestamp > (previousTimestamp + 60000 / document["frequency"][0].GetInt())) {
+    if (shouldSendData()) {
 		// Compute some auxiliary info based on the above
 		TelemVect3 forwardVector = { -info.mOriX.z, -info.mOriY.z, -info.mOriZ.z };
 		TelemVect3    leftVector = { info.mOriX.x,  info.mOriY.x,  info.mOriZ.x };
@@ -442,8 +457,6 @@ void ExampleInternalsPlugin::UpdateTelemetry( const TelemInfoV2 &info )
 
 		// Assign new data to data struct, checking if the signal is enabled from the JSON configuration file
 		try {
-			previousTimestamp = currentTimestamp;
-
 			if (document["signals"]["clutchRPM"][0] == 1) data.clutchRPM = info.mClutchRPM;
 			if (document["signals"]["deltaTime"][0] == 1) data.deltaTime = info.mDeltaTime;
 			if (document["signals"]["engineOilTemp"][0] == 1) data.engineOilTemp = info.mEngineOilTemp;

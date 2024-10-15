@@ -155,14 +155,14 @@
         "whoIsInControl": [1, "signed char"],
         "finishStatus": [1, "signed char"],
         "yellowFlagState": [1, "signed char"],
-        "vehicleClass": ["", "string"],
-        "terrainNameFL": ["", "string"],
-        "terrainNameFR": ["", "string"],
-        "terrainNameRL": ["", "string"],
-        "terrainNameRR": ["", "string"],
-        "playerName": ["", "string"],
-        "trackName": ["", "string"],
-        "vehicleName": ["", "string"],
-        "driverName": ["", "string"]
+        "vehicleClass": [1, "string"],
+        "terrainNameFL": [1, "string"],
+        "terrainNameFR": [1, "string"],
+        "terrainNameRL": [1, "string"],
+        "terrainNameRR": [1, "string"],
+        "playerName": [1, "string"],
+        "trackName": [1, "string"],
+        "vehicleName": [1, "string"],
+        "driverName": [1, "string"]
     }
 }
