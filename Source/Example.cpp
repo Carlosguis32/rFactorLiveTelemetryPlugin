@@ -37,7 +37,7 @@
 
 // plugin information
 unsigned g_uPluginID          = 0;
-char     g_szPluginName[]     = "LiveTelemetryPlugin";
+char     g_szPluginName[]     = "rFactorTelemetryPlugin";
 unsigned g_uPluginVersion     = 001;
 unsigned g_uPluginObjectCount = 1;
 InternalsPluginInfo g_PluginInfo;
@@ -45,6 +45,9 @@ InternalsPluginInfo g_PluginInfo;
 // UDP Socket
 std::string IPAddress = "";
 long port;
+
+// Error log file
+FILE* fo;
 
 // JSON config file
 rapidjson::Document document;
@@ -63,16 +66,30 @@ long long getCurrentTimestampMs() {
 	).count();
 }
 
+std::string getCurrentTimestampFormatted() {
+	auto currentTime = std::chrono::system_clock::now();
+	std::time_t currentTimeFormatted = std::chrono::system_clock::to_time_t(currentTime);
+
+	char buf[100];
+	std::strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", std::localtime(&currentTimeFormatted));
+
+	return std::string(buf);
+}
+
 bool shouldSendData() {
+	if (shutdown) {
+		return false;
+	}
+
+	int frequencyPerSecond = document["frequency"][0].GetInt();
+	long long intervalMs = 1000 / frequencyPerSecond;
 	long long currentTimestamp = getCurrentTimestampMs();
-	int frecuenciaPorSegundo = document["frequency"][0].GetInt();
 
-	long long intervaloMs = 1000 / frecuenciaPorSegundo;
-
-	if (currentTimestamp >= (previousTimestamp + intervaloMs)) {
+	if (currentTimestamp >= (previousTimestamp + intervalMs)) {
 		previousTimestamp = currentTimestamp;
 		return true;
 	}
+
 	return false;
 }
 
@@ -163,59 +180,70 @@ void ExampleInternalsPlugin::Startup()
 {
 	// Open ports, read configs, whatever you need to do.  For now, I'll just clear out the
 	// example output data.
-	WriteToAllExampleOutputFiles("w", "-STARTUP-");
+	// WriteToAllExampleOutputFiles("w", "-STARTUP-");
 
 	// default enabled to true
 	mEnabled = true;
 
+	// Use default values if the JSON configuration file is not found
+	bool useDefaultValues = false;
+
+	fo = fopen("logErrorTelemetryConfig.txt", "w+");
+
 	// Read JSON configuration file
-	try {
-		const std::string filename = "Plugins/telemetryConfig.json";
+	const std::string filename = "Plugins/telemetryConfig.json";
+	std::ifstream file(filename);
 
-		std::ifstream file(filename);
-		if (!file.is_open()) {
-			MessageBeep(MB_ICONERROR);
-			std::string errorMessage = "Configuration file could not be opened, check that " + filename + " exists";
-			MessageBox(NULL, errorMessage.c_str(), "Error", MB_OK);
+	if (!file.is_open()) {
+		if (fo != nullptr) {
+			fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Configuration file could not be opened, default values will be used, check that " + filename + " exists").c_str());
 		}
 
-		// Parse JSON file
-		std::stringstream buffer;
-		buffer << file.rdbuf();
-		std::string jsonContent = buffer.str();
-
-		if (document.Parse(jsonContent.c_str()).HasParseError()) {
-			MessageBeep(MB_ICONERROR);
-			MessageBox(NULL, "Error parsing JSON configuration file", "Error", MB_OK);
-		}
-
-		// Get server IP from JSON configuration file
-		if (document["server"]["ip"][0] != "") {
-			IPAddress = document["server"]["ip"][0].GetString();
-			MessageBox(NULL, IPAddress.c_str(), "IP", MB_OK);
-		}
-		else {
-			// Default IP
-			IPAddress = "127.0.0.1";
-		}
-
-		// Get server port from JSON configuration file
-		if (document["server"]["port"][0] != 0) {
-			port = document["server"]["port"][0].GetInt();
-			MessageBox(NULL, std::to_string(port).c_str(), "Port", MB_OK);
-		}
-		else {
-			// Default port
-			port = 6000;
-		}
-	}
-	catch (const std::exception& e) {
 		MessageBeep(MB_ICONERROR);
-        MessageBox(NULL, e.what(), "Error", MB_OK);
+		std::string errorMessage = "Configuration file could not be opened, default values will be used, check that " + filename + " exists";
+		MessageBox(NULL, errorMessage.c_str(), "Error", MB_OK);
+		useDefaultValues = true;
+	}
+
+	// Parse JSON file
+	std::stringstream buffer;
+	buffer << file.rdbuf();
+	std::string jsonContent = buffer.str();
+
+	if (document.Parse(jsonContent.c_str()).HasParseError()) {
+		if (fo != nullptr) {
+			fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Error parsing JSON configuration file"));
+		}
+
+		MessageBeep(MB_ICONERROR);
+		MessageBox(NULL, "Error parsing JSON configuration file", "Error", MB_OK);
+		useDefaultValues = true;
+	}
+
+	// Get server IP from JSON configuration file
+	if (!useDefaultValues || document["server"]["ip"][0] != "") {
+		IPAddress = document["server"]["ip"][0].GetString();
+	} 
+	else {
+		// Default IP
+		IPAddress = "127.0.0.1";
+	}
+
+	// Get server port from JSON configuration file
+	if (!useDefaultValues || document["server"]["port"][0] != 0) {
+		port = document["server"]["port"][0].GetInt();
+	}
+	else {
+		// Default port
+		port = 6000;
 	}
 
 	// Initialize Winsock
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+		if (fo != nullptr) {
+			fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": WSAStartup failed"));
+		}
+
 		MessageBeep(MB_ICONERROR);
 		MessageBox(NULL, "WSAStartup failed", "Error", MB_OK);
 	}
@@ -223,16 +251,30 @@ void ExampleInternalsPlugin::Startup()
 	// Create socket
 	sockfd = socket(AF_INET, SOCK_DGRAM, 0);
 	if (sockfd == INVALID_SOCKET) {
+		if (fo != nullptr) {
+			fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Socket creation failed"));
+		}
+
 		MessageBeep(MB_ICONERROR);
 		MessageBox(NULL, "Socket creation failed", "Error", MB_OK);
 		WSACleanup();
 	}
 
-	// Set up server address structure
-	ZeroMemory(&servaddr, sizeof(servaddr));
-	servaddr.sin_family = AF_INET;
-	servaddr.sin_port = htons(port);
-	inet_pton(AF_INET, IPAddress.c_str(), &servaddr.sin_addr);
+	// Set up server configurations
+	try {
+		ZeroMemory(&servaddr, sizeof(servaddr));
+		servaddr.sin_family = AF_INET;
+		servaddr.sin_port = htons(port);
+		inet_pton(AF_INET, IPAddress.c_str(), &servaddr.sin_addr);
+	}
+	catch (const std::exception& e) {
+		if (fo != nullptr) {
+			fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Error setting up server configurations"));
+		}
+
+		MessageBeep(MB_ICONERROR);
+		MessageBox(NULL, "Error setting up server configurations", "Error", MB_OK);
+	}
 }
 
 void ExampleInternalsPlugin::Shutdown()
@@ -292,26 +334,16 @@ void ExampleInternalsPlugin::UpdateTelemetry( TelemInfoV2 &info )
 			(info.mLocalVel.y * info.mLocalVel.y) +
 			(info.mLocalVel.z * info.mLocalVel.z));
 
-		// Assign new data to data struct, checking if the signal is enabled from the JSON configuration file
 		info.mPitch = pitch * radsToDeg;
 		info.mRoll = roll * radsToDeg;
 		info.mSpeed = metersPerSec;
 
-		try {
-			// Send data to server
-			int result = sendto(sockfd, (const char*)&info, sizeof(info), 0, (const sockaddr*)&servaddr, sizeof(servaddr));
-			if (result == SOCKET_ERROR) {
-				MessageBox(NULL, ("Data could not be sent to the server. Error Code: " + std::to_string(WSAGetLastError())).c_str(), "Error", MB_OK | MB_ICONERROR);
+		int result = sendto(sockfd, (const char*)&info, sizeof(info), 0, (const sockaddr*)&servaddr, sizeof(servaddr));
+
+		if (result == SOCKET_ERROR) {
+			if (fo != nullptr) {
+				fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Data could not be sent to the server. Error Code: " + std::to_string(WSAGetLastError())).c_str());
 			}
-
-		}
-		catch (const std::exception& e) {
-			MessageBeep(MB_ICONERROR);
-			MessageBox(NULL, e.what(), "Error", MB_OK);
-
-			// Close the socket in case of error
-			closesocket(sockfd);
-			WSACleanup();
 		}
 	}
 }
@@ -375,20 +407,13 @@ bool ExampleInternalsPlugin::ForceFeedback( float &forceValue )
 void ExampleInternalsPlugin::UpdateScoring( const ScoringInfoV2 &info )
 {
 	// Note: function is called twice per second now (instead of once per second in previous versions)
-	try {
-		// Send data to server
-		int result = sendto(sockfd, (const char*)&info, sizeof(info), 0, (const sockaddr*)&servaddr, sizeof(servaddr));
-		if (result == SOCKET_ERROR) {
-			MessageBox(NULL, ("Data could not be sent to the server. Error Code: " + std::to_string(WSAGetLastError())).c_str(), "Error", MB_OK | MB_ICONERROR);
-		}
-	}
-	catch (const std::exception& e) {
-		MessageBeep(MB_ICONERROR);
-		MessageBox(NULL, e.what(), "Error", MB_OK);
+	// Send data to server
+	int result = sendto(sockfd, (const char*)&info, sizeof(info), 0, (const sockaddr*)&servaddr, sizeof(servaddr));
 
-		// Close the socket in case of error
-		closesocket(sockfd);
-		WSACleanup();
+	if (result == SOCKET_ERROR) {
+		if (fo != nullptr) {
+			fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Data could not be sent to the server. Error Code: " + std::to_string(WSAGetLastError())).c_str());
+		}
 	}
 }
 

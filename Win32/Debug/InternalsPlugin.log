@@ -1,3 +1,9 @@
 ﻿cl : línea de comandos  warning D9035: La opción 'Gm' está desusada y se quitará en próximas versiones
   Example.cpp
-  InternalsPlugin.vcxproj -> C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Win32\Debug\TelemetryPlugin.dll
+C:\Users\Carlos\Documents\Repositories\rFactorLiveTelemetryPlugin\Source\Example.cpp(80,6): warning C4551: la llamada a la función no tiene lista de argumentos
+C:\Users\Carlos\Documents\Repositories\rFactorLiveTelemetryPlugin\Source\Example.cpp(215,16): warning C4477: 'fprintf' : la cadena de formato '%s' requiere un argumento de tipo 'char *', pero el argumento variádico 1 tiene el tipo 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'
+C:\Users\Carlos\Documents\Repositories\rFactorLiveTelemetryPlugin\Source\Example.cpp(244,16): warning C4477: 'fprintf' : la cadena de formato '%s' requiere un argumento de tipo 'char *', pero el argumento variádico 1 tiene el tipo 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'
+C:\Users\Carlos\Documents\Repositories\rFactorLiveTelemetryPlugin\Source\Example.cpp(255,16): warning C4477: 'fprintf' : la cadena de formato '%s' requiere un argumento de tipo 'char *', pero el argumento variádico 1 tiene el tipo 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'
+C:\Users\Carlos\Documents\Repositories\rFactorLiveTelemetryPlugin\Source\Example.cpp(272,16): warning C4477: 'fprintf' : la cadena de formato '%s' requiere un argumento de tipo 'char *', pero el argumento variádico 1 tiene el tipo 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'
+C:\Users\Carlos\Documents\Repositories\rFactorLiveTelemetryPlugin\Source\Example.cpp(270,31): warning C4101: 'e': variable local sin referencia
+  InternalsPlugin.vcxproj -> C:\Users\Carlos\Documents\Repositories\rFactorLiveTelemetryPlugin\Win32\Debug\TelemetryPlugin.dll
