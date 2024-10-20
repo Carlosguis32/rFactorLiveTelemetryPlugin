@@ -1,9 +1,12 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Carlos\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Win32\\",
+  "WorkspaceRootPath": "C:\\Users\\cpast\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Win32\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{D0C09F9B-E1D6-4A04-B698-190F52BBA156}|InternalsPlugin.vcxproj|C:\\Users\\Carlos\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Source\\Example.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{D0C09F9B-E1D6-4A04-B698-190F52BBA156}|InternalsPlugin.vcxproj|C:\\Users\\cpast\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Source\\Example.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D0C09F9B-E1D6-4A04-B698-190F52BBA156}|InternalsPlugin.vcxproj|C:\\Users\\cpast\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Include\\InternalsPlugin.hpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -13,19 +16,32 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "InternalsPlugin.hpp",
+              "DocumentMoniker": "C:\\Users\\cpast\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Include\\InternalsPlugin.hpp",
+              "RelativeDocumentMoniker": "..\\Include\\InternalsPlugin.hpp",
+              "ToolTip": "C:\\Users\\cpast\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Include\\InternalsPlugin.hpp",
+              "RelativeToolTip": "..\\Include\\InternalsPlugin.hpp",
+              "ViewState": "AgIAAD0BAAAAAAAAAAAowFgBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2024-10-19T23:54:24.438Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Example.cpp",
-              "DocumentMoniker": "C:\\Users\\Carlos\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Source\\Example.cpp",
+              "DocumentMoniker": "C:\\Users\\cpast\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Source\\Example.cpp",
               "RelativeDocumentMoniker": "..\\Source\\Example.cpp",
-              "ToolTip": "C:\\Users\\Carlos\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Source\\Example.cpp",
+              "ToolTip": "C:\\Users\\cpast\\Documents\\Repositories\\rFactorLiveTelemetryPlugin\\Source\\Example.cpp",
               "RelativeToolTip": "..\\Source\\Example.cpp",
-              "ViewState": "AgIAAMgAAAAAAAAAAAAkwNYAAABkAAAAAAAAAA==",
+              "ViewState": "AgIAAPkAAAAAAAAAAAAAABABAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-10-17T08:24:25.905Z",
+              "WhenOpened": "2024-10-19T19:49:41.045Z",
               "EditorCaption": ""
             }
           ]

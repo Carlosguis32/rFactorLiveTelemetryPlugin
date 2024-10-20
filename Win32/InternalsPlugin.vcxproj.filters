@@ -9,10 +9,6 @@
       <UniqueIdentifier>{3f7bc989-dff5-4c2a-8ce6-a58ffc0ed85a}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{87801d73-e3ee-425e-9649-a5e0569ba06d}</UniqueIdentifier>
-      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\Example.cpp">

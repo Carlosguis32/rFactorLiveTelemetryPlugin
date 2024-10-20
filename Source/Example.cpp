@@ -1,21 +1,3 @@
-//���������������������������������������������������������������������������
-//�                                                                         �
-//� Module: Internals Example Source File                                   �
-//�                                                                         �
-//� Description: Declarations for the Internals Example Plugin              �
-//�                                                                         �
-//�                                                                         �
-//� This source code module, and all information, data, and algorithms      �
-//� associated with it, are part of CUBE technology (tm).                   �
-//�                 PROPRIETARY AND CONFIDENTIAL                            �
-//� Copyright (c) 1996-2007 Image Space Incorporated.  All rights reserved. �
-//�                                                                         �
-//�                                                                         �
-//� Change history:                                                         �
-//�   tag.2005.11.30: created                                               �
-//�                                                                         �
-//���������������������������������������������������������������������������
-
 // Needed for winsock libraries
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -43,7 +25,7 @@ unsigned g_uPluginObjectCount = 1;
 InternalsPluginInfo g_PluginInfo;
 
 // UDP Socket
-std::string IPAddress = "";
+std::string IPAddress;
 long port;
 
 // Error log file
@@ -54,6 +36,12 @@ rapidjson::Document document;
 
 // Previous timestamp
 long long previousTimestamp = 0.0f;
+
+// Shutdown flag
+bool telemetryShutdown = false;
+
+// Use default values if the JSON configuration file is not found
+bool useDefaultValues = false;
 
 // Socket variables
 WSADATA wsaData;
@@ -77,11 +65,19 @@ std::string getCurrentTimestampFormatted() {
 }
 
 bool shouldSendData() {
-	if (shutdown) {
+	if (telemetryShutdown) {
 		return false;
 	}
 
-	int frequencyPerSecond = document["frequency"][0].GetInt();
+	// Default frequency
+	int frequencyPerSecond = 60;
+
+	if (!useDefaultValues) {
+		if (document["frequency"][0] != 0) {
+			frequencyPerSecond = document["frequency"][0].GetInt();
+		}
+	}
+
 	long long intervalMs = 1000 / frequencyPerSecond;
 	long long currentTimestamp = getCurrentTimestampMs();
 
@@ -151,7 +147,7 @@ PluginObjectInfo *ExampleInternalsPlugin::GetInfo()
 
 void ExampleInternalsPlugin::WriteToAllExampleOutputFiles( const char * const openStr, const char * const msg )
 {
-  FILE *fo;
+  /*FILE* fo;
 
   fo = fopen( "ExampleInternalsTelemetryOutput.txt", openStr );
   if( fo != NULL )
@@ -172,7 +168,7 @@ void ExampleInternalsPlugin::WriteToAllExampleOutputFiles( const char * const op
   {
     fprintf( fo, "%s\n", msg );
     fclose( fo );
-  }
+  }*/
 }
 
 
@@ -184,9 +180,6 @@ void ExampleInternalsPlugin::Startup()
 
 	// default enabled to true
 	mEnabled = true;
-
-	// Use default values if the JSON configuration file is not found
-	bool useDefaultValues = false;
 
 	fo = fopen("logErrorTelemetryConfig.txt", "w+");
 
@@ -212,51 +205,52 @@ void ExampleInternalsPlugin::Startup()
 
 	if (document.Parse(jsonContent.c_str()).HasParseError()) {
 		if (fo != nullptr) {
-			fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Error parsing JSON configuration file"));
+			fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Error parsing JSON configuration file").c_str());
 		}
-
-		MessageBeep(MB_ICONERROR);
-		MessageBox(NULL, "Error parsing JSON configuration file", "Error", MB_OK);
 		useDefaultValues = true;
 	}
 
+	// Default IP address
+	IPAddress = "127.0.0.1";
+
 	// Get server IP from JSON configuration file
-	if (!useDefaultValues || document["server"]["ip"][0] != "") {
-		IPAddress = document["server"]["ip"][0].GetString();
-	} 
-	else {
-		// Default IP
-		IPAddress = "127.0.0.1";
+	if (!useDefaultValues) {
+		if (document["server"]["ip"][0] != "") {
+			IPAddress = document["server"]["ip"][0].GetString();
+		}
 	}
 
+	// Default port
+	port = 6000;
+
 	// Get server port from JSON configuration file
-	if (!useDefaultValues || document["server"]["port"][0] != 0) {
-		port = document["server"]["port"][0].GetInt();
-	}
-	else {
-		// Default port
-		port = 6000;
+	if (!useDefaultValues) {
+		if (document["server"]["port"][0] != 0) {
+			port = document["server"]["port"][0].GetInt();
+		}
 	}
 
 	// Initialize Winsock
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
 		if (fo != nullptr) {
-			fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": WSAStartup failed"));
+			fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": WSAStartup failed").c_str());
 		}
 
+		telemetryShutdown = true;
 		MessageBeep(MB_ICONERROR);
-		MessageBox(NULL, "WSAStartup failed", "Error", MB_OK);
+		MessageBox(NULL, "WSAStartup failed, telemetry will not be enabled", "Error", MB_OK);
 	}
 
 	// Create socket
 	sockfd = socket(AF_INET, SOCK_DGRAM, 0);
 	if (sockfd == INVALID_SOCKET) {
 		if (fo != nullptr) {
-			fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Socket creation failed"));
+			fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Socket creation failed").c_str());
 		}
 
+		telemetryShutdown = true;
 		MessageBeep(MB_ICONERROR);
-		MessageBox(NULL, "Socket creation failed", "Error", MB_OK);
+		MessageBox(NULL, "Socket creation failed, telemetry will not be enabled", "Error", MB_OK);
 		WSACleanup();
 	}
 
@@ -269,20 +263,22 @@ void ExampleInternalsPlugin::Startup()
 	}
 	catch (const std::exception& e) {
 		if (fo != nullptr) {
-			fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Error setting up server configurations"));
+			fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Error setting up server configurations").c_str());
 		}
 
+		telemetryShutdown = true;
 		MessageBeep(MB_ICONERROR);
-		MessageBox(NULL, "Error setting up server configurations", "Error", MB_OK);
+		MessageBox(NULL, "Error setting up server configurations, telemetry will not be enabled", "Error", MB_OK);
 	}
 }
 
 void ExampleInternalsPlugin::Shutdown()
 {
-  //WriteToAllExampleOutputFiles( "a", "-SHUTDOWN-" );
-  // Close the socket
-  closesocket(sockfd);
-  WSACleanup();
+	//WriteToAllExampleOutputFiles( "a", "-SHUTDOWN-" );
+	// Close the socket
+	fclose(fo);
+	closesocket(sockfd);
+	WSACleanup();
 }
 
 
@@ -408,11 +404,13 @@ void ExampleInternalsPlugin::UpdateScoring( const ScoringInfoV2 &info )
 {
 	// Note: function is called twice per second now (instead of once per second in previous versions)
 	// Send data to server
-	int result = sendto(sockfd, (const char*)&info, sizeof(info), 0, (const sockaddr*)&servaddr, sizeof(servaddr));
+	if (shouldSendData()) {
+		int result = sendto(sockfd, (const char*)&info, sizeof(info), 0, (const sockaddr*)&servaddr, sizeof(servaddr));
 
-	if (result == SOCKET_ERROR) {
-		if (fo != nullptr) {
-			fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Data could not be sent to the server. Error Code: " + std::to_string(WSAGetLastError())).c_str());
+		if (result == SOCKET_ERROR) {
+			if (fo != nullptr) {
+				fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Data could not be sent to the server. Error Code: " + std::to_string(WSAGetLastError())).c_str());
+			}
 		}
 	}
 }
@@ -424,13 +422,13 @@ bool ExampleInternalsPlugin::RequestCommentary( CommentaryRequestInfo &info )
   return( false );
 
   // only if enabled, of course
-  if( !mEnabled )
+  /*if (!mEnabled)
     return( false );
 
   // Note: function is called twice per second
 
   // Say green flag event for no particular reason every 20 seconds ...
-  const float timeMod20 = fmodf( mET, 20.0f );
+  const float timeMod20 = fmodf(mET, 20.0f);
   if( timeMod20 > 19.0f )
   {
     strcpy( info.mName, "GreenFlag" );
@@ -441,6 +439,6 @@ bool ExampleInternalsPlugin::RequestCommentary( CommentaryRequestInfo &info )
     return( true );
   }
 
-  return( false );
+  return( false );*/
 }
 

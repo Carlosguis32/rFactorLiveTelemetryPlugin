@@ -1,21 +1,3 @@
-//‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹
-//›                                                                         ﬁ
-//› Module: Header file for plugin object types                             ﬁ
-//›                                                                         ﬁ
-//› Description: interface declarations for plugin objects                  ﬁ
-//›                                                                         ﬁ
-//› This source code module, and all information, data, and algorithms      ﬁ
-//› associated with it, are part of isiMotor Technology (tm).               ﬁ
-//›                 PROPRIETARY AND CONFIDENTIAL                            ﬁ
-//› Copyright (c) 1996-2007 Image Space Incorporated.  All rights reserved. ﬁ
-//›                                                                         ﬁ
-//› Change history:                                                         ﬁ
-//›   kc.2004.0?.??: created                                                ﬁ
-//›   mm.2004.05.25: added this description header                          ﬁ
-//›   mm.2004.05.20: splitting this file up so that each type of plugin     ﬁ
-//›                  gets its own header file.                              ﬁ
-//›                                                                         ﬁ
-//ﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂ
 #ifndef _PLUGINOBJECT
 #define _PLUGINOBJECT
 

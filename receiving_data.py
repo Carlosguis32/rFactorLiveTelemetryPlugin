@@ -1,46 +1,83 @@
-import struct
 import socket
+import struct
+from dataclasses import dataclass
+from typing import List
 
-# Definir el formato de los datos, basándonos en la estructura C++
-# 'f' representa float y 'B' representa unsigned char
-DATA_FORMAT = 'f' * 111 + 'B' + 'f' * 6 + 'B' + 'f' * 10
-DATA_SIZE = 636
+@dataclass
+class TelemVect3:
+    x: float
+    y: float
+    z: float
 
-def parse_data(data):
-    try:
-        # Calcular el número de elementos que se pueden desempaquetar
-        num_elements = len(data) // struct.calcsize('f')
-        # Ajustar el formato de los datos según el número de elementos disponibles
-        adjusted_format = 'f' * num_elements
-        unpacked_data = struct.unpack(adjusted_format, data)
-        keys = [
-            'clutchRPM', 'deltaTime', 'engineOilTemp', 'engineWaterTemp', 'lapStartET', 'lapDistance', 'bestS1', 'bestS2', 'bestLap', 'lastS1', 'lastS2', 'lastLap', 'currentS1', 'currentS2', 'numPitstops', 'numPenalties', 'localAccelX', 'localAccelY', 'localAccelZ', 'localRotX', 'localRotY', 'localRotZ', 'localRotAccelX', 'localRotAccelY', 'localRotAccelZ', 'localVelX', 'localVelY', 'localVelZ', 'oriXX', 'oriXY', 'oriXZ', 'oriYX', 'oriYY', 'oriYZ', 'oriZX', 'oriZY', 'oriZZ', 'posX', 'posY', 'posZ', 'steeringArmForce', 'trackName', 'vehicleName', 'driverName', 'speed', 'accelLat', 'accelLong', 'roll', 'pitch', 'rpm', 'maxRPM', 'lapIniTime', 'lapNumber', 'brake', 'clutch', 'steering', 'throttle', 'gear', 'brakeTempFL', 'brakeTempFR', 'brakeTempRL', 'brakeTempRR', 'gripFactorFL', 'gripFactorFR', 'gripFactorRL', 'gripFactorRR', 'lateralForceFL', 'lateralForceFR', 'lateralForceRL', 'lateralForceRR', 'pressureFL', 'pressureFR', 'pressureRL', 'pressureRR', 'rideHeightFL', 'rideHeightFR', 'rideHeightRL', 'rideHeightRR', 'rotationFL', 'rotationFR', 'rotationRL', 'rotationRR', 'shockDeflectionFL', 'shockDeflectionFR', 'shockDeflectionRL', 'shockDeflectionRR', 'tireTempFLI', 'tireTempFLM', 'tireTempFLO', 'tireTempFRI', 'tireTempFRM', 'tireTempFRO', 'tireTempRLI', 'tireTempRLM', 'tireTempRLO', 'tireTempRRI', 'tireTempRRM', 'tireTempRRO', 'tireLoadFL', 'tireLoadFR', 'tireLoadRL', 'tireLoadRR', 'tireWearFL', 'tireWearFR', 'tireWearRL', 'tireWearRR', 'detached', 'detachedFL', 'detachedFR', 'detachedRL', 'detachedRR', 'overheating', 'flatFL', 'flatFR', 'flatRL', 'flatRR', 'surfaceFL', 'surfaceFR', 'surfaceRL', 'surfaceRR', 'lastImpactET', 'lastImpactMagnitude', 'lastImpactPosX', 'lastImpactPosY', 'lastImpactPosZ', 'scheduledStops', 'fuel', 'isPlayer', 'whoIsInControl', 'isInPit', 'vehicleClass', 'deltaTimeBehind', 'deltaLapsBehind', 'deltaTimeLeader', 'deltaLapsLeader', 'numOfVehicles', 'terrainNameFL', 'terrainNameFR', 'terrainNameRL', 'terrainNameRR', 'finishStatus', 'position', 'maxLaps', 'endingTime', 'currentTime', 'gamePhase', 'yellowFlagState', 'startLight', 'numRedLights', 'playerName', 'cloudDarkness', 'rainSeverity', 'ambientTemp', 'trackTemp', 'windSpeedX', 'windSpeedY', 'windSpeedZ', 'onPathWetness', 'offPathWetness'
-        ]
-        return {key: value for key, value in zip(keys, unpacked_data)}
-    except struct.error as e:
-        print(f"Error desempaquetando datos: {e}")
-        return {}
+@dataclass
+class TelemInfoV2:
+    mDeltaTime: float
+    mLapNumber: int
+    mLapStartET: float
+    mVehicleName: str
+    mTrackName: str
+    mPos: TelemVect3
+    mLocalVel: TelemVect3
+    mLocalAccel: TelemVect3
 
-# Configurar la dirección IP y el puerto en el que escucharemos
-HOST = '127.0.0.1'
-PORT = 6000
+def receive_telemetry():
+    UDP_IP = "127.0.0.1"
+    UDP_PORT = 6000
 
-# Crear un socket UDP
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind((HOST, PORT))
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.bind((UDP_IP, UDP_PORT))
 
-print(f"Escuchando en {HOST}:{PORT}")
+    print(f"Listening for telemetry data on {UDP_IP}:{UDP_PORT}")
 
-while True:
-    data, addr = sock.recvfrom(1024)  # Leer hasta 1024 bytes para verificar tamaño
-    print(f"Datos recibidos ({len(data)} bytes) de {addr}")
-    print(len(data))
-    print(DATA_SIZE)
+    while True:
+        data, addr = sock.recvfrom(2048)
+        print(f"Received {len(data)} bytes of data")
+        print(f"First 100 bytes: {data[:100].hex()}")
+        try:
+            telemetry = parse_telemetry(data)
+            if telemetry:
+                print_telemetry(telemetry)
+        except Exception as e:
+            print(f"Error processing telemetry data: {e}")
+            print("Continuing to next packet...")
+
+def parse_telemetry(data):
+    # The format string for the data
+    fmt = "<64s 64s 100x f I f 9f"  # 64-char string, 64-char string, 100 bytes padding, float, unsigned int, float, 9 floats for vectors
     
-    if len(data) <= DATA_SIZE:
-        # Procesar los datos recibidos si el tamaño es correcto
-        parsed_data = parse_data(data)
-        print(f"Datos recibidos de {addr}:")
-        print(parsed_data["steering"])
-    else:
-        print(f"Tamaño de datos incorrecto: {len(data)} bytes")
+    try:
+        unpacked = struct.unpack_from(fmt, data)
+        
+        track_name = unpacked[0].split(b'\x00')[0].decode('ascii', errors='ignore')
+        vehicle_name = unpacked[1].split(b'\x00')[0].decode('ascii', errors='ignore')
+        
+        return TelemInfoV2(
+            mTrackName=track_name,
+            mVehicleName=vehicle_name,
+            mDeltaTime=unpacked[2],
+            mLapNumber=unpacked[3],
+            mLapStartET=unpacked[4],
+            mPos=TelemVect3(*unpacked[5:8]),
+            mLocalVel=TelemVect3(*unpacked[8:11]),
+            mLocalAccel=TelemVect3(*unpacked[11:14])
+        )
+    except struct.error as e:
+        print(f"Error unpacking data: {e}")
+        return None
+
+def print_telemetry(telemetry):
+    if telemetry is None:
+        print("No telemetry data to print")
+        return
+    print(f"Track Name: {telemetry.mTrackName}")
+    print(f"Vehicle Name: {telemetry.mVehicleName}")
+    print(f"Delta Time: {telemetry.mDeltaTime:.6f}")
+    print(f"Lap Number: {telemetry.mLapNumber}")
+    print(f"Lap Start ET: {telemetry.mLapStartET:.2f}")
+    print(f"Position: X={telemetry.mPos.x:.2f}, Y={telemetry.mPos.y:.2f}, Z={telemetry.mPos.z:.2f}")
+    print(f"Local Velocity: X={telemetry.mLocalVel.x:.2f}, Y={telemetry.mLocalVel.y:.2f}, Z={telemetry.mLocalVel.z:.2f}")
+    print(f"Local Acceleration: X={telemetry.mLocalAccel.x:.2f}, Y={telemetry.mLocalAccel.y:.2f}, Z={telemetry.mLocalAccel.z:.2f}")
+    print("-" * 50)
+
+if __name__ == "__main__":
+    receive_telemetry()

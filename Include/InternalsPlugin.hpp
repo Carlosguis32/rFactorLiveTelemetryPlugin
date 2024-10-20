@@ -1,19 +1,3 @@
-//‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹
-//›                                                                         ﬁ
-//› Module: Header file for internals plugin                                ﬁ
-//›                                                                         ﬁ
-//› Description: Interface declarations for internals plugin                ﬁ
-//›                                                                         ﬁ
-//› This source code module, and all information, data, and algorithms      ﬁ
-//› associated with it, are part of isiMotor Technology (tm).               ﬁ
-//›                 PROPRIETARY AND CONFIDENTIAL                            ﬁ
-//› Copyright (c) 1996-2007 Image Space Incorporated.  All rights reserved. ﬁ
-//›                                                                         ﬁ
-//› Change history:                                                         ﬁ
-//›   tag.2005.11.29: created                                               ﬁ
-//›                                                                         ﬁ
-//ﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂﬂ
-
 #ifndef _INTERNALS_PLUGIN_HPP_
 #define _INTERNALS_PLUGIN_HPP_
 
