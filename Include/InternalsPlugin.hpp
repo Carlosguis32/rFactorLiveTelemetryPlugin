@@ -18,6 +18,13 @@ struct TelemVect3
   void Set( const float a, const float b, const float c )  { x = a; y = b; z = c; }
 };
 
+struct AdditionalSignals
+{
+  float mRoll;				// roll angle (deg)
+  float mPitch;				// pitch angle (deg)
+  float mSpeed;				// speed (km/h)
+};
+
 
 struct TelemWheel
 {
@@ -82,9 +89,6 @@ struct TelemInfoBase
   float mEngineWaterTemp;        // Celsius
   float mEngineOilTemp;          // Celsius
   float mClutchRPM;              // clutch RPM
-  float mPitch;                  // pitch angle (deg)
-  float mRoll;					 // roll angle (deg)
-  float mSpeed;                  // speed (meters/sec)
 
   // Driver input
   float mUnfilteredThrottle;     // ranges  0.0-1.0
@@ -120,7 +124,6 @@ struct TelemInfoV2 : public TelemInfoBase // for noobs: TelemInfoV2 contains eve
   // keeping this at the end of the structure to make it easier to replace in future versions
   TelemWheelV2 mWheel[4];        // wheel info (front left, front right, rear left, rear right)
 };
-
 
 struct GraphicsInfo              // may be expanded in the future to provide interfaces for drawing onscreen
 {

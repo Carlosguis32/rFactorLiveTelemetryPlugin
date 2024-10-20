@@ -64,9 +64,13 @@ std::string getCurrentTimestampFormatted() {
 	return std::string(buf);
 }
 
-bool shouldSendData() {
+bool shouldSendData(bool notAffectedByFrequency) {
 	if (telemetryShutdown) {
 		return false;
+	}
+
+	if (notAffectedByFrequency == true) {
+		return true;
 	}
 
 	// Default frequency
@@ -263,7 +267,7 @@ void ExampleInternalsPlugin::Startup()
 	}
 	catch (const std::exception& e) {
 		if (fo != nullptr) {
-			fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Error setting up server configurations").c_str());
+			fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Error setting up server configurations: " + e.what()).c_str());
 		}
 
 		telemetryShutdown = true;
@@ -307,15 +311,14 @@ void ExampleInternalsPlugin::ExitRealtime()
   //WriteToAllExampleOutputFiles( "a", "---EXITREALTIME---" );
 }
 
-
-void ExampleInternalsPlugin::UpdateTelemetry( TelemInfoV2 &info )
+void ExampleInternalsPlugin::UpdateTelemetry( const TelemInfoV2 &info )
 {
 	// This function is called 90 times per seconds in manual mode and 40 times per seconds in I.A mode (approximate time)
 	
 	// Use the incoming data, for now I'll just write some of it to a file to a) make sure it
 	// is working, and b) explain the coordinate system a little bit (see header for more info)
 
-    if (shouldSendData()) {
+    if (shouldSendData(false)) {
 		// Compute some auxiliary info based on the above
 		TelemVect3 forwardVector = { -info.mOriX.z, -info.mOriY.z, -info.mOriZ.z };
 		TelemVect3    leftVector = { info.mOriX.x,  info.mOriY.x,  info.mOriZ.x };
@@ -330,13 +333,17 @@ void ExampleInternalsPlugin::UpdateTelemetry( TelemInfoV2 &info )
 			(info.mLocalVel.y * info.mLocalVel.y) +
 			(info.mLocalVel.z * info.mLocalVel.z));
 
-		info.mPitch = pitch * radsToDeg;
-		info.mRoll = roll * radsToDeg;
-		info.mSpeed = metersPerSec;
+		AdditionalSignals additionalSignals;
 
-		int result = sendto(sockfd, (const char*)&info, sizeof(info), 0, (const sockaddr*)&servaddr, sizeof(servaddr));
+		additionalSignals.mPitch = pitch * radsToDeg;
+		additionalSignals.mRoll = roll * radsToDeg;
+		additionalSignals.mSpeed = metersPerSec * 3.6;
 
-		if (result == SOCKET_ERROR) {
+		int sendInfoStruct = sendto(sockfd, (const char*)&info, sizeof(info), 0, (const sockaddr*)&servaddr, sizeof(servaddr));
+		int sendAdditionalSignalsStruct = sendto(sockfd, (const char*)&additionalSignals, sizeof(additionalSignals), 0, (const sockaddr*)&servaddr, sizeof(servaddr));
+
+
+		if (sendInfoStruct == SOCKET_ERROR || sendAdditionalSignalsStruct == SOCKET_ERROR) {
 			if (fo != nullptr) {
 				fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Data could not be sent to the server. Error Code: " + std::to_string(WSAGetLastError())).c_str());
 			}
@@ -404,7 +411,7 @@ void ExampleInternalsPlugin::UpdateScoring( const ScoringInfoV2 &info )
 {
 	// Note: function is called twice per second now (instead of once per second in previous versions)
 	// Send data to server
-	if (shouldSendData()) {
+	if (shouldSendData(true)) {
 		int result = sendto(sockfd, (const char*)&info, sizeof(info), 0, (const sockaddr*)&servaddr, sizeof(servaddr));
 
 		if (result == SOCKET_ERROR) {

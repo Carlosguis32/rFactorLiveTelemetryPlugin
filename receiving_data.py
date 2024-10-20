@@ -32,7 +32,7 @@ def receive_telemetry():
     while True:
         data, addr = sock.recvfrom(2048)
         print(f"Received {len(data)} bytes of data")
-        print(f"First 100 bytes: {data[:100].hex()}")
+        print(data)
         try:
             telemetry = parse_telemetry(data)
             if telemetry:
