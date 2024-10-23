@@ -7,9 +7,9 @@
     "frequency": [60, "float"],
 
     "signals": {
-        "packetID": [1, "unsigned char"],
+        "packetSizes": [780, 492, 12],
 
-        "packet_1": {
+        "packet_0": {
             "mDeltaTime": [4, "float"],
             "mLapNumber": [4, "long"],
             "mLapStartET": [4, "float"],
@@ -143,7 +143,7 @@
             "mSplitByteRR": [1, "skip"]
         },
 
-        "packet_2": {
+        "packet_1": {
             "mTrackName": [64, "string"],
             "mSession": [4, "long"],
             "mCurrentET": [4, "float"],
@@ -174,7 +174,7 @@
             "mExpansion": [256, "skip"]
         },
 
-        "packet_3": {
+        "packet_2": {
             "mRoll": [4, "float"],
             "mPitch": [4, "float"],
             "mSpeed": [4, "float"]
