@@ -6,9 +6,9 @@
 
     "frequency": [60, "float"],
 
-    "signals": {
-        "packetSizes": [780, 492, 12],
+    "packetSizes": [780, 492, 12],
 
+    "signals": {
         "packet_0": {
             "mDeltaTime": [4, "float"],
             "mLapNumber": [4, "long"],
