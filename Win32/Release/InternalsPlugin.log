@@ -1,0 +1,4 @@
+﻿  Example.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(2535,40): error C2338: static_assert failed: 'Windows headers require the default packing option. Changing this can lead to memory corruption. This diagnostic can be disabled by building with WINDOWS_IGNORE_PACKING_MISMATCH defined.'
+  (compilando archivo de origen "../Source/Example.cpp")
+  

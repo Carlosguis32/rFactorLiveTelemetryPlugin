@@ -7,6 +7,7 @@
 #include <math.h>						// for atan2, sqrt
 #include <stdio.h>						// for sample output
 #include <string>						// for JSON manipulation
+#include <vector>						// for JSON manipulation
 #include <stdio.h>						// for JSON manipulation
 #include <iostream>						// for JSON manipulation
 #include <fstream>						// for JSON manipulation
@@ -25,8 +26,8 @@ unsigned g_uPluginObjectCount = 1;
 InternalsPluginInfo g_PluginInfo;
 
 // UDP Socket
-std::string IPAddress;
-long port;
+std::vector<std::string> ipAddresses;
+std::vector<std::string> ports;
 
 // Error log file
 FILE* fo;
@@ -46,7 +47,10 @@ bool useDefaultValues = false;
 // Socket variables
 WSADATA wsaData;
 SOCKET sockfd;
-sockaddr_in servaddr;
+std::vector<sockaddr_in> servaddr;
+
+// Additional signals struct (for adding custom signals to send)
+AdditionalSignals additionalSignals;
 
 long long getCurrentTimestampMs() {
 	return std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -214,24 +218,44 @@ void ExampleInternalsPlugin::Startup()
 		useDefaultValues = true;
 	}
 
-	// Default IP address
-	IPAddress = "127.0.0.1";
-
 	// Get server IP from JSON configuration file
 	if (!useDefaultValues) {
-		if (document["server"]["ip"][0] != "") {
-			IPAddress = document["server"]["ip"][0].GetString();
+		const auto& ipsArray = document["server"]["ip"];
+		if (ipsArray.IsArray() && ipsArray[0].IsArray()) {
+			const auto& ips = ipsArray[0];
+			for (rapidjson::SizeType i = 0; i < ips.Size(); ++i) {
+				if (ips[i].IsString()) {
+					ipAddresses.push_back(ips[i].GetString());
+				} else {
+					if (fo != nullptr) {
+						fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Invalid IP format in JSON configuration file").c_str());
+					}
+				}
+			}
 		}
+	} else {
+		ipAddresses.push_back("127.0.0.1");
 	}
-
-	// Default port
-	port = 6000;
 
 	// Get server port from JSON configuration file
 	if (!useDefaultValues) {
-		if (document["server"]["port"][0] != 0) {
-			port = document["server"]["port"][0].GetInt();
+		const auto& portsArray = document["server"]["port"];
+		if (portsArray.IsArray() && portsArray[0].IsArray()) {
+			const auto& portsTemp = portsArray[0];
+			for (rapidjson::SizeType i = 0; i < portsTemp.Size(); ++i) {
+				if (portsTemp[i].IsString()) {
+					ports.push_back(portsTemp[i].GetString());
+				}
+				else {
+					if (fo != nullptr) {
+						fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Invalid port format in JSON configuration file").c_str());
+					}
+				}
+			}
 		}
+	}
+	else {
+		ports.push_back("6000");
 	}
 
 	// Initialize Winsock
@@ -259,20 +283,11 @@ void ExampleInternalsPlugin::Startup()
 	}
 
 	// Set up server configurations
-	try {
-		ZeroMemory(&servaddr, sizeof(servaddr));
-		servaddr.sin_family = AF_INET;
-		servaddr.sin_port = htons(port);
-		inet_pton(AF_INET, IPAddress.c_str(), &servaddr.sin_addr);
-	}
-	catch (const std::exception& e) {
-		if (fo != nullptr) {
-			fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Error setting up server configurations: " + e.what()).c_str());
-		}
-
-		telemetryShutdown = true;
-		MessageBeep(MB_ICONERROR);
-		MessageBox(NULL, "Error setting up server configurations, telemetry will not be enabled", "Error", MB_OK);
+	servaddr.resize(ipAddresses.size());
+	for (size_t i = 0; i < ipAddresses.size(); ++i) {
+		servaddr[i].sin_family = AF_INET;
+		inet_pton(AF_INET, ipAddresses[i].c_str(), &servaddr[i].sin_addr);
+		servaddr[i].sin_port = htons(static_cast<u_short>(std::stoi(ports[i])));
 	}
 }
 
@@ -333,19 +348,22 @@ void ExampleInternalsPlugin::UpdateTelemetry( const TelemInfoV2 &info )
 			(info.mLocalVel.y * info.mLocalVel.y) +
 			(info.mLocalVel.z * info.mLocalVel.z));
 
-		AdditionalSignals additionalSignals;
-
 		additionalSignals.mPitch = pitch * radsToDeg;
 		additionalSignals.mRoll = roll * radsToDeg;
 		additionalSignals.mSpeed = metersPerSec * 3.6;
 
-		int sendInfoStruct = sendto(sockfd, (const char*)&info, sizeof(info), 0, (const sockaddr*)&servaddr, sizeof(servaddr));
-		int sendAdditionalSignalsStruct = sendto(sockfd, (const char*)&additionalSignals, sizeof(additionalSignals), 0, (const sockaddr*)&servaddr, sizeof(servaddr));
+		int sendSignalsStruct;
+		int sendAdditionalSignalsStruct;
 
-
-		if (sendInfoStruct == SOCKET_ERROR || sendAdditionalSignalsStruct == SOCKET_ERROR) {
-			if (fo != nullptr) {
-				fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Data could not be sent to the server. Error Code: " + std::to_string(WSAGetLastError())).c_str());
+		for (u_int i = 0; i < ipAddresses.size(); i++) {
+			try {
+				sendSignalsStruct = sendto(sockfd, (const char*)&info, sizeof(info), 0, (const sockaddr*)&servaddr[i], sizeof(servaddr[i]));
+				sendAdditionalSignalsStruct = sendto(sockfd, (const char*)&additionalSignals, sizeof(additionalSignals), 0, (const sockaddr*)&servaddr[i], sizeof(servaddr[i]));
+			}
+			catch (const std::exception& e) {
+				if (fo != nullptr) {
+					fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Data could not be sent to the server: " + e.what()).c_str());
+				}
 			}
 		}
 	}
@@ -406,19 +424,47 @@ bool ExampleInternalsPlugin::ForceFeedback( float &forceValue )
 //  return( true );
 }
 
+void ShowErrorMessage(const char* line) {
+	MessageBox(NULL, line, "Error", MB_OK | MB_ICONERROR);
+}
 
 void ExampleInternalsPlugin::UpdateScoring( const ScoringInfoV2 &info )
 {
 	// Note: function is called twice per second now (instead of once per second in previous versions)
 	// Send data to server
 	if (shouldSendData(true)) {
-		int result = sendto(sockfd, (const char*)&info, sizeof(info), 0, (const sockaddr*)&servaddr, sizeof(servaddr));
+		size_t vehicleArraySize = info.mNumVehicles * sizeof(VehicleScoringInfoV2);
+		int sendSignalsStruct;
+		int sendAdditionalSignalsStruct;
 
-		if (result == SOCKET_ERROR) {
-			if (fo != nullptr) {
-				fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Data could not be sent to the server. Error Code: " + std::to_string(WSAGetLastError())).c_str());
+		for (u_int i = 0; i < ipAddresses.size(); i++) {
+			try {
+				sendSignalsStruct = sendto(sockfd, (const char*)&info, sizeof(info), 0, (const sockaddr*)&servaddr[i], sizeof(servaddr[i]));
+				sendAdditionalSignalsStruct = sendto(sockfd, (const char*)info.mVehicle, vehicleArraySize, 0, (const sockaddr*)&servaddr[i], sizeof(servaddr[i]));
+			}
+			catch (const std::exception& e) {
+				if (fo != nullptr) {
+					fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Data could not be sent to the server: " + e.what()).c_str());
+				}
 			}
 		}
+
+		/*if (info.mResultsStream != nullptr) {
+			const char* resultsStream = info.mResultsStream;
+			while (*resultsStream != '\0') {
+				const char* endOfLine = strchr(resultsStream, '\n');
+				if (endOfLine == nullptr) {
+					endOfLine = resultsStream + strlen(resultsStream);
+				}
+
+				size_t lineLength = endOfLine - resultsStream;
+
+				std::string line(resultsStream, lineLength);
+				ShowErrorMessage(line.c_str());
+
+				resultsStream = (*endOfLine == '\n') ? endOfLine + 1 : endOfLine;
+			}
+		}*/
 	}
 }
 
