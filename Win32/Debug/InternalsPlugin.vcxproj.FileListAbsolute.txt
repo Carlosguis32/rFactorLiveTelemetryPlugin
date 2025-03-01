@@ -1,2 +1,1 @@
 C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Win32\Debug\TelemetryPlugin.dll
-C:\Users\Carlos\Documents\Repositories\rFactorLiveTelemetryPlugin\Win32\Debug\TelemetryPlugin.dll
