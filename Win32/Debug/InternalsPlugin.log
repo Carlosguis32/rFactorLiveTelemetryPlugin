@@ -1,4 +1,0 @@
-﻿cl : línea de comandos  warning D9035: La opción 'Gm' está desusada y se quitará en próximas versiones
-  Example.cpp
-     Creando biblioteca .\Debug/InternalsPlugin.lib y objeto .\Debug/InternalsPlugin.exp
-  InternalsPlugin.vcxproj -> C:\Users\cpast\Documents\Repositories\rFactorLiveTelemetryPlugin\Win32\Debug\TelemetryPlugin.dll
