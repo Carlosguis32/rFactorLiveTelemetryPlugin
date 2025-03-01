@@ -11,12 +11,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Source\Example.cpp">
+    <ClCompile Include="..\Source\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Include\Example.hpp">
+    <ClInclude Include="..\Include\main.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Include\InternalsPlugin.hpp">

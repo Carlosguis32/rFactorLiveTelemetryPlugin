@@ -151,10 +151,10 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Source\Example.cpp" />
+    <ClCompile Include="..\Source\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Include\Example.hpp" />
+    <ClInclude Include="..\Include\main.hpp" />
     <ClInclude Include="..\Include\InternalsPlugin.hpp" />
     <ClInclude Include="..\Include\RFPluginObjects.hpp" />
   </ItemGroup>

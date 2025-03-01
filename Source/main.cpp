@@ -3,7 +3,7 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 
-#include "Example.hpp"					// corresponding header file
+#include "main.hpp"					// corresponding header file
 #include <math.h>						// for atan2, sqrt
 #include <stdio.h>						// for sample output
 #include <string>						// for JSON manipulation
