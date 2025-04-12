@@ -3,22 +3,22 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 
-#include "main.hpp"					// corresponding header file
-#include <math.h>						// for atan2, sqrt
-#include <stdio.h>						// for sample output
-#include <string>						// for JSON manipulation
-#include <vector>						// for JSON manipulation
-#include <stdio.h>						// for JSON manipulation
-#include <iostream>						// for JSON manipulation
-#include <fstream>						// for JSON manipulation
-#include <sstream>						// parsing JSON
-#include <chrono>						// obtaining current time
+#include "main.hpp"						// Corresponding header file
+#include <math.h>						// For atan2, sqrt
+#include <stdio.h>						// For sample output
+#include <string>						// For JSON manipulation
+#include <vector>						// For JSON manipulation
+#include <stdio.h>						// For JSON manipulation
+#include <iostream>						// For JSON manipulation
+#include <fstream>						// For JSON manipulation
+#include <sstream>						// Parsing JSON
+#include <chrono>						// Obtaining current time
 #include "rapidjson/document.h"			// JSON library
-#include <winsock2.h>					// needed for socket UDP transmission
-#include <ws2tcpip.h>					// needed for socket UDP transmission
-#pragma comment(lib, "Ws2_32.lib")		// needed for socket UDP transmission
+#include <winsock2.h>					// Needed for socket UDP transmission
+#include <ws2tcpip.h>					// Needed for socket UDP transmission
+#pragma comment(lib, "Ws2_32.lib")		// Needed for socket UDP transmission
 
-// plugin information
+// Plugin information
 unsigned g_uPluginID          = 0;
 char     g_szPluginName[]     = "rFactorTelemetryPlugin";
 unsigned g_uPluginVersion     = 001;
@@ -52,13 +52,15 @@ std::vector<sockaddr_in> servaddr;
 // Additional signals struct (for adding custom signals to send)
 AdditionalSignals additionalSignals;
 
+
 long long getCurrentTimestampMs() {
 	return std::chrono::duration_cast<std::chrono::milliseconds>(
 		std::chrono::high_resolution_clock::now().time_since_epoch()
 	).count();
 }
 
-std::string getCurrentTimestampFormatted() {
+
+static std::string getCurrentTimestampFormatted() {
 	auto currentTime = std::chrono::system_clock::now();
 	std::time_t currentTimeFormatted = std::chrono::system_clock::to_time_t(currentTime);
 
@@ -68,7 +70,8 @@ std::string getCurrentTimestampFormatted() {
 	return std::string(buf);
 }
 
-bool shouldSendData(bool notAffectedByFrequency) {
+
+bool shouldSendData( bool notAffectedByFrequency ) {
 	if (telemetryShutdown) {
 		return false;
 	}
@@ -97,7 +100,8 @@ bool shouldSendData(bool notAffectedByFrequency) {
 	return false;
 }
 
-// interface to plugin information
+
+// Interface to plugin information
 extern "C" __declspec(dllexport)
 const char* __cdecl GetPluginName() { return g_szPluginName; }
 
@@ -107,88 +111,44 @@ unsigned __cdecl GetPluginVersion() { return g_uPluginVersion; }
 extern "C" __declspec(dllexport)
 unsigned __cdecl GetPluginObjectCount() { return g_uPluginObjectCount; }
 
-// get the plugin-info object used to create the plugin.
+// Get the plugin-info object used to create the plugin.
 extern "C" __declspec(dllexport)
 
-PluginObjectInfo* __cdecl GetPluginObjectInfo( const unsigned uIndex )
-{
-  switch(uIndex)
-  {
-    case 0:
-      return  &g_PluginInfo;
-    default:
-      return 0;
-  }
+
+PluginObjectInfo* __cdecl GetPluginObjectInfo( const unsigned uIndex ) {
+	switch(uIndex) {
+	case 0:
+		return  &g_PluginInfo;
+	default:
+		return 0;
+	}
 }
 
 
-// InternalsPluginInfo class
-
-InternalsPluginInfo::InternalsPluginInfo()
-{
-  // put together a name for this plugin
-  sprintf( m_szFullName, "%s - %s", g_szPluginName, InternalsPluginInfo::GetName() );
+InternalsPluginInfo::InternalsPluginInfo() {
+	sprintf(m_szFullName, "%s - %s", g_szPluginName, InternalsPluginInfo::GetName());
 }
 
 const char*    InternalsPluginInfo::GetName()     const { return ExampleInternalsPlugin::GetName(); }
 const char*    InternalsPluginInfo::GetFullName() const { return m_szFullName; }
-const char*    InternalsPluginInfo::GetDesc()     const { return "Example Internals Plugin"; }
+const char*    InternalsPluginInfo::GetDesc()     const { return "Telemetry plugin for rFactor"; }
 const unsigned InternalsPluginInfo::GetType()     const { return ExampleInternalsPlugin::GetType(); }
 const char*    InternalsPluginInfo::GetSubType()  const { return ExampleInternalsPlugin::GetSubType(); }
 const unsigned InternalsPluginInfo::GetVersion()  const { return ExampleInternalsPlugin::GetVersion(); }
 void*          InternalsPluginInfo::Create()      const { return new ExampleInternalsPlugin(); }
 
-
-// InternalsPlugin class
-
-const char ExampleInternalsPlugin::m_szName[] = "InternalsPlugin";
-const char ExampleInternalsPlugin::m_szSubType[] = "Internals";
+const char ExampleInternalsPlugin::m_szName[] = "TelemetryPlugin";
+const char ExampleInternalsPlugin::m_szSubType[] = "Telemetry";
 const unsigned ExampleInternalsPlugin::m_uID = 1;
-const unsigned ExampleInternalsPlugin::m_uVersion = 3;  // set to 3 for InternalsPluginV3 functionality and added graphical and vehicle info
+const unsigned ExampleInternalsPlugin::m_uVersion = 3;  // Set to 3 for InternalsPluginV3 functionality and added graphical and vehicle info
 
 
-PluginObjectInfo *ExampleInternalsPlugin::GetInfo()
-{
-  return &g_PluginInfo;
+PluginObjectInfo *ExampleInternalsPlugin::GetInfo() {
+	return &g_PluginInfo;
 }
 
 
-void ExampleInternalsPlugin::WriteToAllExampleOutputFiles( const char * const openStr, const char * const msg )
-{
-  /*FILE* fo;
-
-  fo = fopen( "ExampleInternalsTelemetryOutput.txt", openStr );
-  if( fo != NULL )
-  {
-    fprintf( fo, "%s\n", msg );
-    fclose( fo );
-  }
-
-  fo = fopen( "ExampleInternalsGraphicsOutput.txt", openStr );
-  if( fo != NULL )
-  {
-    fprintf( fo, "%s\n", msg );
-    fclose( fo );
-  }
-
-  fo = fopen( "ExampleInternalsScoringOutput.txt", openStr );
-  if( fo != NULL )
-  {
-    fprintf( fo, "%s\n", msg );
-    fclose( fo );
-  }*/
-}
-
-
-void ExampleInternalsPlugin::Startup()
-{
-	// Open ports, read configs, whatever you need to do.  For now, I'll just clear out the
-	// example output data.
-	// WriteToAllExampleOutputFiles("w", "-STARTUP-");
-
-	// default enabled to true
-	mEnabled = true;
-
+void ExampleInternalsPlugin::Startup() {
 	fo = fopen("logErrorTelemetryConfig.txt", "w+");
 
 	// Read JSON configuration file
@@ -215,46 +175,55 @@ void ExampleInternalsPlugin::Startup()
 		if (fo != nullptr) {
 			fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Error parsing JSON configuration file").c_str());
 		}
+
 		useDefaultValues = true;
 	}
 
-	// Get server IP from JSON configuration file
+	// Get server IP and port from JSON configuration file
 	if (!useDefaultValues) {
-		const auto& ipsArray = document["server"]["ip"];
-		if (ipsArray.IsArray() && ipsArray[0].IsArray()) {
-			const auto& ips = ipsArray[0];
-			for (rapidjson::SizeType i = 0; i < ips.Size(); ++i) {
-				if (ips[i].IsString()) {
-					ipAddresses.push_back(ips[i].GetString());
-				} else {
-					if (fo != nullptr) {
-						fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Invalid IP format in JSON configuration file").c_str());
+		if (document.HasMember("server") && document["server"].IsObject()) {
+			const auto& server = document["server"];
+
+			if (server.HasMember("ip") && server["ip"].IsArray()) {
+				const auto& ipsArray = server["ip"];
+				for (rapidjson::SizeType i = 0; i < ipsArray.Size(); ++i) {
+					if (ipsArray[i].IsString()) {
+						ipAddresses.push_back(ipsArray[i].GetString());
+					} else {
+						if (fo != nullptr) {
+							fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Invalid IP format in JSON configuration file").c_str());
+						}
 					}
 				}
+			} else {
+				if (fo != nullptr) {
+					fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": 'ip' is not a valid array in JSON configuration file").c_str());
+				}
+			}
+
+			if (server.HasMember("port") && server["port"].IsArray()) {
+				const auto& portsArray = server["port"];
+				for (rapidjson::SizeType i = 0; i < portsArray.Size(); ++i) {
+					if (portsArray[i].IsString()) {
+						ports.push_back(portsArray[i].GetString());
+					} else {
+						if (fo != nullptr) {
+							fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Invalid port format in JSON configuration file").c_str());
+						}
+					}
+				}
+			} else {
+				if (fo != nullptr) {
+					fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": 'port' is not a valid array in JSON configuration file").c_str());
+				}
+			}
+		} else {
+			if (fo != nullptr) {
+				fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": 'server' is not a valid object in JSON configuration file").c_str());
 			}
 		}
 	} else {
 		ipAddresses.push_back("127.0.0.1");
-	}
-
-	// Get server port from JSON configuration file
-	if (!useDefaultValues) {
-		const auto& portsArray = document["server"]["port"];
-		if (portsArray.IsArray() && portsArray[0].IsArray()) {
-			const auto& portsTemp = portsArray[0];
-			for (rapidjson::SizeType i = 0; i < portsTemp.Size(); ++i) {
-				if (portsTemp[i].IsString()) {
-					ports.push_back(portsTemp[i].GetString());
-				}
-				else {
-					if (fo != nullptr) {
-						fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Invalid port format in JSON configuration file").c_str());
-					}
-				}
-			}
-		}
-	}
-	else {
 		ports.push_back("6000");
 	}
 
@@ -291,9 +260,8 @@ void ExampleInternalsPlugin::Startup()
 	}
 }
 
-void ExampleInternalsPlugin::Shutdown()
-{
-	//WriteToAllExampleOutputFiles( "a", "-SHUTDOWN-" );
+
+void ExampleInternalsPlugin::Shutdown() {
 	// Close the socket
 	fclose(fo);
 	closesocket(sockfd);
@@ -301,44 +269,15 @@ void ExampleInternalsPlugin::Shutdown()
 }
 
 
-void ExampleInternalsPlugin::StartSession()
-{
-  //WriteToAllExampleOutputFiles( "a", "--STARTSESSION--" );
-}
-
-
-void ExampleInternalsPlugin::EndSession()
-{
-  //WriteToAllExampleOutputFiles( "a", "--ENDSESSION--" );
-}
-
-
-void ExampleInternalsPlugin::EnterRealtime()
-{
-  // start up timer every time we enter realtime
-  mET = 0.0f;
-  //WriteToAllExampleOutputFiles( "a", "---ENTERREALTIME---" );
-}
-
-
-void ExampleInternalsPlugin::ExitRealtime()
-{
-  //WriteToAllExampleOutputFiles( "a", "---EXITREALTIME---" );
-}
-
 void ExampleInternalsPlugin::UpdateTelemetry( const TelemInfoV2 &info )
 {
 	// This function is called 90 times per seconds in manual mode and 40 times per seconds in I.A mode (approximate time)
-	
-	// Use the incoming data, for now I'll just write some of it to a file to a) make sure it
-	// is working, and b) explain the coordinate system a little bit (see header for more info)
-
     if (shouldSendData(false)) {
 		// Compute some auxiliary info based on the above
 		TelemVect3 forwardVector = { -info.mOriX.z, -info.mOriY.z, -info.mOriZ.z };
 		TelemVect3    leftVector = { info.mOriX.x,  info.mOriY.x,  info.mOriZ.x };
 
-		// These are normalized vectors, and remember that our world Y coordinate is up.  So you can
+		// These are normalized vectors, and remember that our world Y coordinate is up. So you can
 		// determine the current pitch and roll (w.r.t. the world x-z plane) as follows:
 		const float pitch = atan2f(forwardVector.y, sqrtf((forwardVector.x * forwardVector.x) + (forwardVector.z * forwardVector.z)));
 		const float  roll = atan2f(leftVector.y, sqrtf((leftVector.x * leftVector.x) + (leftVector.z * leftVector.z)));
@@ -359,8 +298,7 @@ void ExampleInternalsPlugin::UpdateTelemetry( const TelemInfoV2 &info )
 			try {
 				sendSignalsStruct = sendto(sockfd, (const char*)&info, sizeof(info), 0, (const sockaddr*)&servaddr[i], sizeof(servaddr[i]));
 				sendAdditionalSignalsStruct = sendto(sockfd, (const char*)&additionalSignals, sizeof(additionalSignals), 0, (const sockaddr*)&servaddr[i], sizeof(servaddr[i]));
-			}
-			catch (const std::exception& e) {
+			} catch (const std::exception& e) {
 				if (fo != nullptr) {
 					fprintf(fo, "%s\n", (getCurrentTimestampFormatted() + ": Data could not be sent to the server: " + e.what()).c_str());
 				}
@@ -369,64 +307,6 @@ void ExampleInternalsPlugin::UpdateTelemetry( const TelemInfoV2 &info )
 	}
 }
 
-
-void ExampleInternalsPlugin::UpdateGraphics( const GraphicsInfoV2 &info )
-{
-
-}
-
-
-bool ExampleInternalsPlugin::CheckHWControl( const char * const controlName, float &fRetVal )
-{
-  // only if enabled, of course
-  if( !mEnabled )
-    return( false );
-
-  // Note that incoming value is the game's computation, in case you're interested.
-
-  // Sorry, no control allowed over actual vehicle inputs ... would be too easy to cheat!
-  // However, you can still look at the values.
-
-  // Note: since the game calls this function every frame for every available control, you might consider
-  // doing a binary search if you are checking more than 7 or 8 strings, just to keep the speed up.
-  if( _stricmp( controlName, "LookLeft" ) == 0 )
-  {
-    const float headSwitcheroo = fmodf( mET, 2.0f );
-    if( headSwitcheroo < 0.5 )
-      fRetVal = 1.0f;
-    else
-      fRetVal = 0.0f;
-    return( true );
-  }
-  else if( _stricmp( controlName, "LookRight" ) == 0 )
-  {
-    const float headSwitcheroo = fmodf( mET, 2.0f );
-    if( ( headSwitcheroo > 1.0f ) && ( headSwitcheroo < 1.5f ) )
-      fRetVal = 1.0f;
-    else
-      fRetVal = 0.0f;
-    return( true );
-  }
-
-  return( false );
-}
-
-
-bool ExampleInternalsPlugin::ForceFeedback( float &forceValue )
-{
-  // Note that incoming value is the game's computation, in case you're interested.
-
-  // CHANGE COMMENTS TO ENABLE FORCE EXAMPLE
-  return( false );
-
-  // I think the bounds are -11500 to 11500 ...
-//  forceValue = 11500.0f * sinf( mET );
-//  return( true );
-}
-
-void ShowErrorMessage(const char* line) {
-	MessageBox(NULL, line, "Error", MB_OK | MB_ICONERROR);
-}
 
 void ExampleInternalsPlugin::UpdateScoring( const ScoringInfoV2 &info )
 {
@@ -448,50 +328,24 @@ void ExampleInternalsPlugin::UpdateScoring( const ScoringInfoV2 &info )
 				}
 			}
 		}
-
-		/*if (info.mResultsStream != nullptr) {
-			const char* resultsStream = info.mResultsStream;
-			while (*resultsStream != '\0') {
-				const char* endOfLine = strchr(resultsStream, '\n');
-				if (endOfLine == nullptr) {
-					endOfLine = resultsStream + strlen(resultsStream);
-				}
-
-				size_t lineLength = endOfLine - resultsStream;
-
-				std::string line(resultsStream, lineLength);
-				ShowErrorMessage(line.c_str());
-
-				resultsStream = (*endOfLine == '\n') ? endOfLine + 1 : endOfLine;
-			}
-		}*/
 	}
 }
 
 
-bool ExampleInternalsPlugin::RequestCommentary( CommentaryRequestInfo &info )
-{
-  // COMMENT OUT TO ENABLE EXAMPLE
-  return( false );
+void ExampleInternalsPlugin::StartSession() {}
 
-  // only if enabled, of course
-  /*if (!mEnabled)
-    return( false );
+void ExampleInternalsPlugin::EndSession() {}
 
-  // Note: function is called twice per second
+void ExampleInternalsPlugin::EnterRealtime() { mET = 0.0f; }
 
-  // Say green flag event for no particular reason every 20 seconds ...
-  const float timeMod20 = fmodf(mET, 20.0f);
-  if( timeMod20 > 19.0f )
-  {
-    strcpy( info.mName, "GreenFlag" );
-    info.mInput1 = 0.0f;
-    info.mInput2 = 0.0f;
-    info.mInput3 = 0.0f;
-    info.mSkipChecks = true;
-    return( true );
-  }
+void ExampleInternalsPlugin::WriteToAllExampleOutputFiles(const char* const openStr, const char* const msg) {}
 
-  return( false );*/
-}
+void ExampleInternalsPlugin::ExitRealtime() {}
 
+bool ExampleInternalsPlugin::RequestCommentary( CommentaryRequestInfo &info ) { return(false); }
+
+bool ExampleInternalsPlugin::CheckHWControl(const char* const controlName, float& fRetVal) { return(false); }
+
+bool ExampleInternalsPlugin::ForceFeedback(float& forceValue) { return(false); }
+
+void ExampleInternalsPlugin::UpdateGraphics(const GraphicsInfoV2& info) {}

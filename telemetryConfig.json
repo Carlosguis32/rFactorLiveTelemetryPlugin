@@ -1,7 +1,7 @@
 {
 	"server": {
-		"ip": ["", "string"],
-		"port": [0, "float"]
+		"ip": ["127.0.0.1"],
+		"port": ["6000"]
 	},
 
 	"frequency": [60, "float"],
