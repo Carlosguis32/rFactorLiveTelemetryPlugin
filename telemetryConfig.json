@@ -3,13 +3,9 @@
 		"ip": ["127.0.0.1"],
 		"port": ["6000"]
 	},
-
 	"frequency": [60, "float"],
-
 	"packetSizes": [780, 492, 12, 428],
-
 	"packetAllDriversData": 3,
-
 	"signals": {
 		"packet_0": {
 			"mDeltaTime": [4, "float"],
@@ -144,7 +140,6 @@
 			"mExpansionRR": [32, "skip"],
 			"mSplitByteRR": [1, "skip"]
 		},
-
 		"packet_1": {
 			"mTrackName": [64, "string"],
 			"mSession": [4, "long"],
@@ -176,13 +171,11 @@
 			"mExpansion": [256, "skip"],
 			"mVehicle": [4, "skip"]
 		},
-
 		"packet_2": {
 			"mRoll": [4, "float"],
 			"mPitch": [4, "float"],
 			"mSpeed": [4, "float"]
 		},
-
 		"packet_3": {
 			"mDriverName_External": [32, "string"],
 			"mVehicleName_External": [64, "string"],
