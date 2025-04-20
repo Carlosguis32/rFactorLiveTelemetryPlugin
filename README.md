@@ -44,7 +44,8 @@ Modify `telemetryConfig.json` to customize the plugin:
 The plugin transmits data in packets, with packet_3 containing variable-size driver data:
 
 -   Each driver's data block: 428 bytes
--   Multiple drivers supported (e.g., 3 drivers = 1284 bytes)
+-   Multiple drivers supported (e.g. 3 drivers = 1284 bytes)
+-   Multiple IP and ports supported, just input them in the JSON file (e.g. `"ip": ["127.0.0.1", "192.13.16.81"], "port": ["6000", "8135"]`)
 -   Data format: [size in bytes, type]
 -   Empty bytes marked as "skip" type
 

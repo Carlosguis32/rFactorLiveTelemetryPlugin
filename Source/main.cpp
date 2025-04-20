@@ -84,8 +84,8 @@ bool shouldSendData( bool notAffectedByFrequency ) {
 	int frequencyPerSecond = 60;
 
 	if (!useDefaultValues) {
-		if (document["frequency"][0] != 0) {
-			frequencyPerSecond = document["frequency"][0].GetInt();
+		if (document["frequency"] != 0) {
+			frequencyPerSecond = document["frequency"].GetInt();
 		}
 	}
 
